@@ -1,2168 +1,1162 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام مطابقة الصناديق</title>
 
-<title>نظام مطابقة الصناديق</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<style>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Tahoma, Arial, sans-serif;
+    }
 
-*{
-  box-sizing:border-box;
-  font-family:Tahoma,Arial,sans-serif;
-}
+    body {
+      margin: 0;
+      background: #f3f5f8;
+      color: #1f2937;
+    }
 
-body{
-  margin:0;
-  background:#f4f6f9;
-  color:#172033;
-}
+    .header {
+      background: #111827;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,.12);
+    }
 
-header{
-  background:#111827;
-  color:white;
-  padding:16px 5%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  flex-wrap:wrap;
-}
+    .header h1 {
+      margin: 0 0 7px;
+      font-size: 24px;
+    }
 
-header h1{
-  margin:0;
-  font-size:22px;
-}
+    .header small {
+      color: #cbd5e1;
+    }
 
-.user{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
+    .container {
+      max-width: 1000px;
+      margin: 25px auto;
+      padding: 0 15px;
+    }
 
-.logout{
-  border:0;
-  background:#dc2626;
-  color:white;
-  padding:10px 15px;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:bold;
-}
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 15px rgba(0,0,0,.07);
+    }
 
-.container{
-  width:94%;
-  max-width:1150px;
-  margin:25px auto;
-}
+    .card h2 {
+      margin-top: 0;
+      font-size: 20px;
+    }
 
-.card{
-  background:white;
-  border-radius:16px;
-  padding:22px;
-  margin-bottom:20px;
-  box-shadow:0 5px 20px rgba(0,0,0,.06);
-}
+    input, textarea, button {
+      width: 100%;
+      padding: 13px;
+      margin-top: 8px;
+      margin-bottom: 13px;
+      border-radius: 9px;
+      border: 1px solid #d1d5db;
+      font-size: 15px;
+    }
 
-.login{
-  max-width:430px;
-  margin:70px auto;
-}
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
 
-h2,h3{
-  margin-top:0;
-  color:#1e3a8a;
-}
+    button {
+      border: none;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+      font-weight: bold;
+    }
 
-.grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:16px;
-}
+    button:hover {
+      opacity: .92;
+    }
 
-.field label{
-  display:block;
-  font-weight:bold;
-  margin-bottom:7px;
-}
+    .danger {
+      background: #dc2626;
+    }
 
-.field input,
-.field textarea{
-  width:100%;
-  padding:13px;
-  border:1px solid #d1d5db;
-  border-radius:9px;
-  font-size:15px;
-}
+    .success {
+      background: #16a34a;
+    }
 
-.field textarea{
-  min-height:100px;
-  resize:vertical;
-}
+    .secondary {
+      background: #475569;
+    }
 
-.btn{
-  border:0;
-  border-radius:9px;
-  padding:12px 18px;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-}
+    .hidden {
+      display: none !important;
+    }
 
-.blue{
-  background:#2563eb;
-}
+    .user-info {
+      background: #eef2ff;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
 
-.green{
-  background:#16a34a;
-}
+    .status {
+      padding: 12px;
+      border-radius: 9px;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
 
-.red{
-  background:#dc2626;
-}
+    .status.success {
+      background: #dcfce7;
+      color: #166534;
+    }
 
-.gray{
-  background:#475569;
-}
+    .status.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
 
-.btn:disabled{
-  opacity:.6;
-  cursor:not-allowed;
-}
+    .status.info {
+      background: #dbeafe;
+      color: #1e40af;
+    }
 
-.hidden{
-  display:none !important;
-}
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 10px;
+    }
 
-.notice{
-  padding:13px;
-  border-radius:9px;
-  margin:15px 0;
-  background:#eff6ff;
-  border:1px solid #bfdbfe;
-}
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
 
-.success{
-  background:#f0fdf4;
-  border-color:#bbf7d0;
-}
+    .employee-box {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 10px;
+    }
 
-.error{
-  background:#fef2f2;
-  border-color:#fecaca;
-}
+    .employee-box strong {
+      display: block;
+      margin-bottom: 5px;
+    }
 
-.tabs{
-  display:flex;
-  gap:8px;
-  margin-bottom:18px;
-  flex-wrap:wrap;
-}
+    .amount {
+      font-size: 24px;
+      font-weight: bold;
+      color: #2563eb;
+      margin: 10px 0;
+    }
 
-.tab{
-  border:0;
-  background:#e5e7eb;
-  padding:11px 18px;
-  border-radius:9px;
-  font-weight:bold;
-  cursor:pointer;
-}
+    .footer {
+      text-align: center;
+      padding: 25px;
+      color: #64748b;
+    }
 
-.tab.active{
-  background:#2563eb;
-  color:white;
-}
-
-.total{
-  font-size:20px;
-  font-weight:bold;
-  margin:15px 0;
-}
-
-.misc-list{
-  margin-top:15px;
-}
-
-.misc-item{
-  display:grid;
-  grid-template-columns:1.5fr 1fr auto;
-  gap:8px;
-  margin-bottom:8px;
-}
-
-.misc-item input{
-  padding:11px;
-  border:1px solid #d1d5db;
-  border-radius:8px;
-}
-
-.table-box{
-  overflow:auto;
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  min-width:800px;
-}
-
-th,td{
-  padding:11px;
-  border-bottom:1px solid #e5e7eb;
-  text-align:right;
-}
-
-th{
-  background:#f8fafc;
-}
-
-.footer{
-  text-align:center;
-  color:#64748b;
-  padding:25px;
-}
-
-@media(max-width:700px){
-
-  .grid{
-    grid-template-columns:1fr;
-  }
-
-  .misc-item{
-    grid-template-columns:1fr;
-  }
-
-}
-
-</style>
+    @media (max-width: 700px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<header>
-
-  <h1>نظام مطابقة الصناديق</h1>
-
-  <div class="user">
-
-    <span id="userInfo">
-      جاري التحميل...
-    </span>
-
-    <button class="logout" id="logout">
-      تسجيل الخروج
-    </button>
-
+  <div class="header">
+    <h1>نظام مطابقة الصناديق</h1>
+    <small>إدارة الشفتات ومطابقة الصناديق</small>
   </div>
 
-</header>
+  <div class="container">
+
+    <!-- تسجيل الدخول -->
+    <div id="loginSection" class="card">
+      <h2>تسجيل الدخول</h2>
+
+      <div id="loginMessage"></div>
+
+      <label>اسم المستخدم</label>
+      <input id="loginUsername" type="email" placeholder="أدخل اسم المستخدم">
+
+      <label>كلمة المرور</label>
+      <input id="loginPassword" type="password" placeholder="أدخل كلمة المرور">
+
+      <button id="loginButton">دخول</button>
+    </div>
 
 
-<div class="container">
+    <!-- النظام -->
+    <div id="appSection" class="hidden">
+
+      <div class="user-info">
+        <strong>المستخدم: <span id="employeeName"></span></strong>
+        <div>الصلاحية: <span id="employeeRole"></span></div>
+      </div>
+
+      <div id="message"></div>
 
 
-<!-- تسجيل الدخول -->
+      <!-- لوحة المدير -->
+      <div id="adminSection" class="card hidden">
 
-<section id="loginSection" class="card login">
+        <h2>لوحة المدير</h2>
 
-  <h2>تسجيل الدخول</h2>
+        <button id="showAddEmployeeButton" class="success">
+          + إضافة موظف
+        </button>
 
-  <div class="field">
+        <div id="addEmployeeBox" class="hidden">
 
-    <label>
-      اسم المستخدم
-    </label>
+          <hr>
 
-    <input
-      id="loginEmail"
-      type="email"
-      placeholder="اسم المستخدم"
-    >
+          <h3>إضافة موظف جديد</h3>
 
-  </div>
+          <label>اسم الموظف</label>
+          <input id="newEmployeeName" type="text" placeholder="مثلاً: أحمد">
 
-  <br>
+          <label>اسم المستخدم / البريد الإلكتروني</label>
+          <input id="newEmployeeUsername" type="email" placeholder="example@gmail.com">
 
-  <div class="field">
+          <label>كلمة المرور</label>
+          <input id="newEmployeePassword" type="password" placeholder="6 أحرف على الأقل">
 
-    <label>
-      كلمة المرور
-    </label>
+          <button id="createEmployeeButton" class="success">
+            حفظ الموظف
+          </button>
 
-    <input
-      id="loginPassword"
-      type="password"
-      placeholder="كلمة المرور"
-    >
+          <button id="cancelAddEmployeeButton" class="secondary">
+            إلغاء
+          </button>
 
-  </div>
+        </div>
 
-  <br>
+        <hr>
 
-  <button
-    class="btn blue"
-    id="loginButton"
-  >
-    دخول
-  </button>
+        <h3>الموظفون</h3>
 
-  <div
-    id="loginMessage"
-    class="notice hidden"
-  ></div>
+        <div id="employeesList">
+          جارِ تحميل الموظفين...
+        </div>
 
-</section>
+        <hr>
 
+        <h3>الشفتات</h3>
 
-<!-- النظام -->
+        <button id="loadShiftsButton" class="secondary">
+          تحديث الشفتات
+        </button>
 
-<section
-  id="systemSection"
-  class="hidden"
->
-
-
-<div class="tabs">
-
-  <button
-    class="tab active"
-    id="shiftTab"
-  >
-    الشفت
-  </button>
-
-  <button
-    class="tab hidden"
-    id="adminTab"
-  >
-    لوحة المدير
-  </button>
-
-</div>
-
-
-<!-- ================= الشفت ================= -->
-
-<section
-  id="shiftPage"
-  class="card"
->
-
-  <h2>شفت الموظف</h2>
-
-
-  <!-- بدء الشفت -->
-
-  <div id="startShiftBox">
-
-    <div class="grid">
-
-      <div class="field">
-
-        <label>
-          اسم الموظف
-        </label>
-
-        <input
-          id="employeeName"
-          readonly
-        >
+        <div id="shiftsList">
+          جارِ تحميل الشفتات...
+        </div>
 
       </div>
 
 
-      <div class="field">
+      <!-- الموظف -->
+      <div id="employeeSection" class="card hidden">
 
-        <label>
-          الإيراد الابتدائي
-        </label>
+        <h2>إدارة الشفت</h2>
 
-        <input
-          id="startingCash"
-          type="number"
-          min="0"
-          step="0.01"
-          placeholder="أدخل الإيراد الابتدائي"
-        >
+        <!-- بدء الشفت -->
+        <div id="startShiftBox">
 
-      </div>
+          <h3>بدء الشفت</h3>
 
-    </div>
+          <div class="user-info">
+            الموظف:
+            <strong id="startEmployeeName"></strong>
+          </div>
 
-    <br>
+          <label>الإيراد الابتدائي</label>
+          <input
+            id="startingCash"
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="أدخل الإيراد الابتدائي"
+          >
 
-    <button
-      class="btn blue"
-      id="startShiftButton"
-    >
-      حفظ بدء الشفت
-    </button>
+          <button id="startShiftButton" class="success">
+            بدء الشفت
+          </button>
 
-    <div
-      id="startMessage"
-      class="notice hidden"
-    ></div>
+        </div>
 
-  </div>
 
+        <!-- نهاية الشفت -->
+        <div id="finishShiftBox" class="hidden">
 
-  <!-- الشفت المفتوح -->
+          <h3>نهاية الشفت</h3>
 
-  <div
-    id="openShiftBox"
-    class="hidden"
-  >
+          <label>المبلغ المعزز</label>
+          <input
+            id="reinforcementAmount"
+            type="number"
+            step="0.01"
+            min="0"
+            value="0"
+          >
 
-    <div class="notice success">
+          <label>عدد المعاملات غير المباعة</label>
+          <input
+            id="unsoldCount"
+            type="number"
+            min="0"
+            value="0"
+          >
 
-      الشفت مفتوح ✅
+          <div class="user-info">
+            قيمة المعاملات غير المباعة:
+            <div class="amount">
+              <span id="unsoldAmount">0</span> $
+            </div>
+            <small>كل معاملة = 2000 دولار</small>
+          </div>
 
-      <br><br>
 
-      وقت البداية:
-      <strong id="startDate"></strong>
+          <h3>المتفرقة</h3>
 
-      <br>
+          <div id="miscList"></div>
 
-      الإيراد الابتدائي:
-      <strong id="startAmount"></strong>
-      دولار
+          <button id="addMiscButton" class="secondary">
+            + إضافة متفرقة
+          </button>
 
-    </div>
+          <div class="user-info">
+            مجموع المتفرقة:
+            <div class="amount">
+              <span id="miscTotal">0</span> $
+            </div>
+          </div>
 
 
-    <h3>
-      نهاية الشفت
-    </h3>
+          <label>ملاحظات</label>
+          <textarea
+            id="notes"
+            placeholder="اكتب الملاحظات إن وجدت"
+          ></textarea>
 
+          <button id="finishShiftButton" class="success">
+            إنهاء الشفت وحفظ البيانات
+          </button>
 
-    <!-- التعزيز -->
+        </div>
 
-    <div class="field">
 
-      <label>
-        المبلغ المعزز
-      </label>
+        <!-- الشفت المكتمل -->
+        <div id="completedShiftBox" class="hidden">
 
-      <input
-        id="reinforcement"
-        type="number"
-        min="0"
-        step="0.01"
-        value="0"
-      >
+          <div class="status success">
+            تم إنهاء الشفت بنجاح.
+          </div>
 
-    </div>
+          <p>
+            لا يمكن للموظف تعديل الشفت بعد إنهائه.
+          </p>
 
-
-    <br>
-
-
-    <!-- غير المباعة -->
-
-    <h3>
-      المعاملات غير المباعة
-    </h3>
-
-    <div class="field">
-
-      <label>
-        عدد المعاملات غير المباعة
-      </label>
-
-      <input
-        id="unsoldCount"
-        type="number"
-        min="0"
-        value="0"
-      >
-
-    </div>
-
-
-    <div class="notice">
-
-      قيمة المعاملات غير المباعة:
-
-      <strong>
-        <span id="unsoldAmount">
-          0
-        </span>
-        دولار
-      </strong>
-
-      <br>
-
-      العدد × 2,000 دولار
-
-    </div>
-
-
-    <!-- المتفرقة -->
-
-    <h3>
-      المتفرقة
-    </h3>
-
-
-    <div class="field">
-
-      <label>
-        عدد المتفرقات
-      </label>
-
-      <input
-        id="miscCount"
-        type="number"
-        min="0"
-        value="0"
-      >
-
-    </div>
-
-
-    <div
-      id="miscList"
-      class="misc-list"
-    ></div>
-
-
-    <div class="total">
-
-      مجموع المتفرقة:
-
-      <span id="miscTotal">
-        0
-      </span>
-
-      دولار
-
-    </div>
-
-
-    <!-- الملاحظات -->
-
-    <h3>
-      ملاحظات
-    </h3>
-
-    <div class="field">
-
-      <textarea
-        id="notes"
-        placeholder="اكتب الملاحظات هنا..."
-      ></textarea>
-
-    </div>
-
-
-    <br>
-
-
-    <button
-      class="btn green"
-      id="finishShiftButton"
-    >
-      حفظ وإنهاء الشفت
-    </button>
-
-  </div>
-
-
-  <!-- بعد الإنهاء -->
-
-  <div
-    id="finishedBox"
-    class="hidden"
-  >
-
-    <div class="notice success">
-
-      تم إنهاء الشفت وحفظ البيانات بنجاح ✅
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- ================= لوحة المدير ================= -->
-
-<section
-  id="adminPage"
-  class="card hidden"
->
-
-  <h2>
-    👑 لوحة المدير
-  </h2>
-
-
-  <!-- إضافة موظف -->
-
-  <div class="card">
-
-    <h3>
-      إضافة موظف جديد
-    </h3>
-
-
-    <div class="grid">
-
-      <div class="field">
-
-        <label>
-          اسم الموظف
-        </label>
-
-        <input
-          id="newEmployeeName"
-          placeholder="مثال: أحمد"
-        >
+        </div>
 
       </div>
 
 
-      <div class="field">
-
-        <label>
-          اسم المستخدم
-        </label>
-
-        <input
-          id="newEmployeeEmail"
-          type="email"
-          placeholder="مثال: ahmed@gmail.com"
-        >
-
-      </div>
-
-
-      <div class="field">
-
-        <label>
-          كلمة المرور
-        </label>
-
-        <input
-          id="newEmployeePassword"
-          type="password"
-          placeholder="6 أحرف أو أكثر"
-        >
-
-      </div>
-
-    </div>
-
-
-    <br>
-
-    <button
-      class="btn blue"
-      id="createEmployeeButton"
-    >
-      إنشاء حساب الموظف
-    </button>
-
-
-    <div
-      id="employeeMessage"
-      class="notice hidden"
-    ></div>
-
-  </div>
-
-
-  <!-- البحث -->
-
-  <div class="card">
-
-    <h3>
-      البحث بالورديات
-    </h3>
-
-
-    <div class="grid">
-
-      <div class="field">
-
-        <label>
-          التاريخ
-        </label>
-
-        <input
-          id="searchDate"
-          type="date"
-        >
-
-      </div>
-
-    </div>
-
-
-    <br>
-
-    <button
-      class="btn gray"
-      id="searchButton"
-    >
-      بحث
-    </button>
-
-    <button
-      class="btn blue"
-      id="allShiftsButton"
-    >
-      عرض الكل
-    </button>
-
-  </div>
-
-
-  <!-- الشفتات -->
-
-  <div class="card">
-
-    <h3>
-      جميع الشفتات
-    </h3>
-
-    <div class="table-box">
-
-      <table>
-
-        <thead>
-
-          <tr>
-
-            <th>
-              الموظف
-            </th>
-
-            <th>
-              بداية الشفت
-            </th>
-
-            <th>
-              الإيراد
-            </th>
-
-            <th>
-              التعزيز
-            </th>
-
-            <th>
-              غير المباعة
-            </th>
-
-            <th>
-              المتفرقة
-            </th>
-
-            <th>
-              النهاية
-            </th>
-
-            <th>
-              الحالة
-            </th>
-
-            <th>
-              الملاحظات
-            </th>
-
-          </tr>
-
-        </thead>
-
-
-        <tbody id="shiftsTable">
-
-        </tbody>
-
-      </table>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-</section>
-
-</div>
-
-
-<div class="footer">
-  07710621453
-</div>
-
-
-<script type="module">
-
-import {
-  createClient
-}
-from
-"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-
-
-const SUPABASE_URL =
-"https://paylauzgicnocexukpcg.supabase.co";
-
-
-const SUPABASE_KEY =
-"sb_publishable_Tcq8m6WDJWycpoPxFZObWQ_bkMYwPSv";
-
-
-const supabase =
-createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-
-let currentUser = null;
-
-let currentEmployee = null;
-
-let currentShift = null;
-
-
-function money(value){
-
-  return Number(
-    value || 0
-  ).toLocaleString(
-    "en-US",
-    {
-      minimumFractionDigits:0,
-      maximumFractionDigits:2
-    }
-  );
-
-}
-
-
-function showMessage(
-  element,
-  text,
-  success=false
-){
-
-  element.textContent = text;
-
-  element.classList.remove(
-    "hidden"
-  );
-
-  element.classList.toggle(
-    "success",
-    success
-  );
-
-  element.classList.toggle(
-    "error",
-    !success
-  );
-
-}
-
-
-/* ================= تسجيل الدخول ================= */
-
-document
-.getElementById("loginButton")
-.addEventListener(
-"click",
-async ()=>{
-
-  const email =
-    document
-    .getElementById("loginEmail")
-    .value
-    .trim();
-
-  const password =
-    document
-    .getElementById("loginPassword")
-    .value;
-
-
-  const message =
-    document
-    .getElementById("loginMessage");
-
-
-  if(!email || !password){
-
-    showMessage(
-      message,
-      "أدخل اسم المستخدم وكلمة المرور."
-    );
-
-    return;
-
-  }
-
-
-  const {
-    data,
-    error
-  } =
-  await supabase.auth.signInWithPassword({
-
-    email:email,
-
-    password:password
-
-  });
-
-
-  if(error){
-
-    showMessage(
-      message,
-      "بيانات الدخول غير صحيحة."
-    );
-
-    return;
-
-  }
-
-
-  currentUser =
-    data.user;
-
-
-  await loadSystem();
-
-});
-
-
-/* ================= تحميل النظام ================= */
-
-async function loadSystem(){
-
-  const {
-    data:{
-      user
-    }
-  } =
-  await supabase.auth.getUser();
-
-
-  if(!user){
-
-    document
-    .getElementById("loginSection")
-    .classList
-    .remove("hidden");
-
-    document
-    .getElementById("systemSection")
-    .classList
-    .add("hidden");
-
-    return;
-
-  }
-
-
-  currentUser = user;
-
-
-  const {
-    data:employee,
-    error
-  } =
-  await supabase
-  .from("employees")
-  .select(
-    "id,name,username,role,active"
-  )
-  .eq(
-    "auth_user_id",
-    user.id
-  )
-  .single();
-
-
-  if(error || !employee){
-
-    await supabase.auth.signOut();
-
-    alert(
-      "لم يتم العثور على حساب الموظف."
-    );
-
-    location.reload();
-
-    return;
-
-  }
-
-
-  if(!employee.active){
-
-    await supabase.auth.signOut();
-
-    alert(
-      "هذا الحساب غير فعال."
-    );
-
-    location.reload();
-
-    return;
-
-  }
-
-
-  currentEmployee =
-    employee;
-
-
-  document
-  .getElementById("loginSection")
-  .classList
-  .add("hidden");
-
-
-  document
-  .getElementById("systemSection")
-  .classList
-  .remove("hidden");
-
-
-  document
-  .getElementById("userInfo")
-  .textContent =
-    employee.name +
-    " - " +
-    (
-      employee.role === "admin"
-      ? "مدير"
-      : "موظف"
-    );
-
-
-  document
-  .getElementById("employeeName")
-  .value =
-    employee.name;
-
-
-  if(
-    employee.role === "admin"
-  ){
-
-    document
-    .getElementById("adminTab")
-    .classList
-    .remove("hidden");
-
-    await loadShifts();
-
-  }
-
-
-  await checkOpenShift();
-
-}
-
-
-/* ================= الشفت المفتوح ================= */
-
-async function checkOpenShift(){
-
-  const {
-    data,
-    error
-  } =
-  await supabase
-  .from("shifts")
-  .select("*")
-  .eq(
-    "employee_id",
-    currentEmployee.id
-  )
-  .eq(
-    "status",
-    "open"
-  )
-  .order(
-    "start_date",
-    {
-      ascending:false
-    }
-  )
-  .limit(1);
-
-
-  if(error){
-
-    console.error(error);
-
-    return;
-
-  }
-
-
-  if(data && data.length){
-
-    currentShift =
-      data[0];
-
-    showOpenShift();
-
-  }else{
-
-    document
-    .getElementById("startShiftBox")
-    .classList
-    .remove("hidden");
-
-    document
-    .getElementById("openShiftBox")
-    .classList
-    .add("hidden");
-
-  }
-
-}
-
-
-function showOpenShift(){
-
-  document
-  .getElementById("startShiftBox")
-  .classList
-  .add("hidden");
-
-
-  document
-  .getElementById("openShiftBox")
-  .classList
-  .remove("hidden");
-
-
-  document
-  .getElementById("startDate")
-  .textContent =
-    new Date(
-      currentShift.start_date
-    ).toLocaleString(
-      "ar-IQ"
-    );
-
-
-  document
-  .getElementById("startAmount")
-  .textContent =
-    money(
-      currentShift.starting_cash
-    );
-
-}
-
-
-/* ================= بدء الشفت ================= */
-
-document
-.getElementById("startShiftButton")
-.addEventListener(
-"click",
-async ()=>{
-
-  const amount =
-    Number(
-      document
-      .getElementById("startingCash")
-      .value
-    );
-
-
-  if(
-    !Number.isFinite(amount) ||
-    amount < 0
-  ){
-
-    showMessage(
-      document.getElementById(
-        "startMessage"
-      ),
-      "أدخل الإيراد الابتدائي بشكل صحيح."
-    );
-
-    return;
-
-  }
-
-
-  const button =
-    document
-    .getElementById(
-      "startShiftButton"
-    );
-
-
-  button.disabled = true;
-
-  button.textContent =
-    "جاري الحفظ...";
-
-
-  const {
-    data,
-    error
-  } =
-  await supabase
-  .from("shifts")
-  .insert({
-
-    employee_id:
-      currentEmployee.id,
-
-    starting_cash:
-      amount,
-
-    start_date:
-      new Date().toISOString(),
-
-    status:
-      "open"
-
-  })
-  .select()
-  .single();
-
-
-  if(error){
-
-    button.disabled = false;
-
-    button.textContent =
-      "حفظ بدء الشفت";
-
-    showMessage(
-      document.getElementById(
-        "startMessage"
-      ),
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  currentShift =
-    data;
-
-
-  showOpenShift();
-
-});
-
-
-/* ================= غير المباعة ================= */
-
-document
-.getElementById("unsoldCount")
-.addEventListener(
-"input",
-()=>{
-
-  const count =
-    Number(
-      document
-      .getElementById("unsoldCount")
-      .value
-    ) || 0;
-
-
-  document
-  .getElementById("unsoldAmount")
-  .textContent =
-    money(
-      count * 2000
-    );
-
-});
-
-
-/* ================= المتفرقة ================= */
-
-document
-.getElementById("miscCount")
-.addEventListener(
-"input",
-createMiscFields
-);
-
-
-function createMiscFields(){
-
-  const count =
-    Math.max(
-      0,
-      Math.floor(
-        Number(
-          document
-          .getElementById("miscCount")
-          .value
-        ) || 0
-      )
-    );
-
-
-  const box =
-    document
-    .getElementById("miscList");
-
-
-  box.innerHTML = "";
-
-
-  for(
-    let i=0;
-    i<count;
-    i++
-  ){
-
-    const row =
-      document.createElement(
-        "div"
-      );
-
-
-    row.className =
-      "misc-item";
-
-
-    row.innerHTML = `
-
-      <input
-        type="text"
-        placeholder="اسم المتفرقة"
-      >
-
-      <input
-        type="number"
-        min="0"
-        step="0.01"
-        placeholder="المبلغ بالدولار"
-      >
-
-      <button
-        class="btn red"
-        type="button"
-      >
-        حذف
+      <button id="logoutButton" class="danger">
+        تسجيل الخروج
       </button>
 
-    `;
+    </div>
+
+  </div>
 
 
-    row
-    .querySelector(
-      "input:nth-child(2)"
-    )
-    .addEventListener(
-      "input",
-      calculateMisc
+  <div class="footer">
+    07710621453
+  </div>
+
+
+<script>
+
+  const SUPABASE_URL =
+    "https://paylauzgicnocexukpcg.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_Tcq8m6WDJWycpoPxFZObWQ_bkMYwPSv";
+
+
+  const { createClient } =
+    supabase;
+
+  const db =
+    createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
     );
 
 
-    row
-    .querySelector("button")
-    .addEventListener(
-      "click",
-      ()=>{
+  let currentUser = null;
+  let currentEmployee = null;
+  let currentShift = null;
 
-        row.remove();
 
-        calculateMisc();
+  const $ = id =>
+    document.getElementById(id);
 
+
+  function showMessage(text, type = "info") {
+
+    $("message").innerHTML =
+      `<div class="status ${type}">
+        ${text}
+      </div>`;
+
+  }
+
+
+  function showLoginMessage(text, type = "error") {
+
+    $("loginMessage").innerHTML =
+      `<div class="status ${type}">
+        ${text}
+      </div>`;
+
+  }
+
+
+  function money(value) {
+
+    return Number(value || 0).toLocaleString(
+      "en-US",
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
       }
-    );
-
-
-    box.appendChild(
-      row
     );
 
   }
 
 
-  calculateMisc();
+  // تسجيل الدخول
+  $("loginButton").addEventListener(
+    "click",
+    async () => {
 
-}
+      const username =
+        $("loginUsername").value.trim();
 
+      const password =
+        $("loginPassword").value;
 
-function calculateMisc(){
+      if (!username || !password) {
 
-  let total = 0;
+        showLoginMessage(
+          "أدخل اسم المستخدم وكلمة المرور"
+        );
 
-
-  document
-  .querySelectorAll(
-    "#miscList .misc-item"
-  )
-  .forEach(
-    row=>{
-
-      const amount =
-        Number(
-          row
-          .querySelector(
-            "input:nth-child(2)"
-          )
-          .value
-        ) || 0;
+        return;
+      }
 
 
-      total += amount;
+      $("loginButton").disabled = true;
+      $("loginButton").textContent = "جارِ الدخول...";
+
+
+      try {
+
+        const {
+          data,
+          error
+        } = await db.auth.signInWithPassword({
+
+          email: username,
+          password: password
+
+        });
+
+
+        if (error)
+          throw error;
+
+
+        currentUser = data.user;
+
+
+        await loadEmployee();
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        showLoginMessage(
+          error.message ||
+          "فشل تسجيل الدخول"
+        );
+
+      }
+
+
+      $("loginButton").disabled = false;
+      $("loginButton").textContent = "دخول";
 
     }
   );
 
 
-  document
-  .getElementById("miscTotal")
-  .textContent =
-    money(total);
-
-}
-
-
-/* ================= إنهاء الشفت ================= */
-
-document
-.getElementById("finishShiftButton")
-.addEventListener(
-"click",
-async ()=>{
-
-  if(!currentShift){
-
-    return;
-
-  }
-
-
-  const reinforcement =
-    Number(
-      document
-      .getElementById(
-        "reinforcement"
-      )
-      .value
-    ) || 0;
-
-
-  const unsoldCount =
-    Math.max(
-      0,
-      Math.floor(
-        Number(
-          document
-          .getElementById(
-            "unsoldCount"
-          )
-          .value
-        ) || 0
-      )
-    );
-
-
-  const unsoldAmount =
-    unsoldCount * 2000;
-
-
-  const miscRows =
-    [
-      ...
-      document
-      .querySelectorAll(
-        "#miscList .misc-item"
-      )
-    ];
-
-
-  const miscItems =
-    miscRows
-    .map(
-      row=>({
-
-        name:
-          row
-          .querySelector(
-            "input:nth-child(1)"
-          )
-          .value
-          .trim(),
-
-        amount:
-          Number(
-            row
-            .querySelector(
-              "input:nth-child(2)"
-            )
-            .value
-          ) || 0
-
-      })
-    )
-    .filter(
-      item =>
-        item.name ||
-        item.amount > 0
-    );
-
-
-  const miscTotal =
-    miscItems.reduce(
-      (sum,item)=>
-        sum + item.amount,
-      0
-    );
-
-
-  const notes =
-    document
-    .getElementById("notes")
-    .value
-    .trim();
-
-
-  const button =
-    document
-    .getElementById(
-      "finishShiftButton"
-    );
-
-
-  button.disabled = true;
-
-  button.textContent =
-    "جاري الحفظ...";
-
-
-  const {
-    error
-  } =
-  await supabase
-  .from("shifts")
-  .update({
-
-    reinforcement_amount:
-      reinforcement,
-
-    unsold_transactions_count:
-      unsoldCount,
-
-    unsold_transactions_amount:
-      unsoldAmount,
-
-    unsold_misc_count:
-      miscItems.length,
-
-    unsold_misc_amount:
-      miscTotal,
-
-    notes:
-      notes,
-
-    end_date:
-      new Date().toISOString(),
-
-    ended_at:
-      new Date().toISOString(),
-
-    status:
-      "completed"
-
-  })
-  .eq(
-    "id",
-    currentShift.id
-  );
-
-
-  if(error){
-
-    button.disabled = false;
-
-    button.textContent =
-      "حفظ وإنهاء الشفت";
-
-    alert(
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  if(
-    miscItems.length
-  ){
+  // تحميل بيانات الموظف
+  async function loadEmployee() {
 
     const {
-      error:miscError
-    } =
-    await supabase
-    .from("misc_unsold")
-    .insert(
-      miscItems.map(
-        item=>({
-
-          shift_id:
-            currentShift.id,
-
-          name:
-            item.name,
-
-          amount:
-            item.amount
-
-        })
+      data,
+      error
+    } = await db
+      .from("employees")
+      .select("*")
+      .eq(
+        "auth_user_id",
+        currentUser.id
       )
-    );
+      .single();
 
 
-    if(miscError){
+    if (error)
+      throw error;
 
-      alert(
-        "تم إنهاء الشفت لكن حدث خطأ بحفظ المتفرقات: " +
-        miscError.message
-      );
 
-    }
+    if (!data.active) {
 
-  }
-
-
-  alert(
-    "تم إنهاء الشفت وحفظ البيانات بنجاح ✅"
-  );
-
-
-  document
-  .getElementById("openShiftBox")
-  .classList
-  .add("hidden");
-
-
-  document
-  .getElementById("finishedBox")
-  .classList
-  .remove("hidden");
-
-
-  currentShift =
-    null;
-
-
-  if(
-    currentEmployee.role === "admin"
-  ){
-
-    await loadShifts();
-
-  }
-
-});
-
-
-/* ================= لوحة المدير ================= */
-
-document
-.getElementById("adminTab")
-.addEventListener(
-"click",
-async ()=>{
-
-  document
-  .getElementById("shiftPage")
-  .classList
-  .add("hidden");
-
-
-  document
-  .getElementById("adminPage")
-  .classList
-  .remove("hidden");
-
-
-  document
-  .getElementById("shiftTab")
-  .classList
-  .remove("active");
-
-
-  document
-  .getElementById("adminTab")
-  .classList
-  .add("active");
-
-
-  await loadShifts();
-
-});
-
-
-document
-.getElementById("shiftTab")
-.addEventListener(
-"click",
-()=>{
-
-  document
-  .getElementById("adminPage")
-  .classList
-  .add("hidden");
-
-
-  document
-  .getElementById("shiftPage")
-  .classList
-  .remove("hidden");
-
-
-  document
-  .getElementById("adminTab")
-  .classList
-  .remove("active");
-
-
-  document
-  .getElementById("shiftTab")
-  .classList
-  .add("active");
-
-});
-
-
-/* ================= إنشاء موظف ================= */
-
-document
-.getElementById("createEmployeeButton")
-.addEventListener(
-"click",
-async ()=>{
-
-  const name =
-    document
-    .getElementById(
-      "newEmployeeName"
-    )
-    .value
-    .trim();
-
-
-  const email =
-    document
-    .getElementById(
-      "newEmployeeEmail"
-    )
-    .value
-    .trim();
-
-
-  const password =
-    document
-    .getElementById(
-      "newEmployeePassword"
-    )
-    .value;
-
-
-  const message =
-    document
-    .getElementById(
-      "employeeMessage"
-    );
-
-
-  if(
-    !name ||
-    !email ||
-    password.length < 6
-  ){
-
-    showMessage(
-      message,
-      "أدخل الاسم والإيميل وكلمة مرور من 6 أحرف على الأقل."
-    );
-
-    return;
-
-  }
-
-
-  const {
-    data:{
-      session
-    }
-  } =
-  await supabase
-  .auth
-  .getSession();
-
-
-  if(!session){
-
-    return;
-
-  }
-
-
-  const button =
-    document
-    .getElementById(
-      "createEmployeeButton"
-    );
-
-
-  button.disabled = true;
-
-  button.textContent =
-    "جاري إنشاء الحساب...";
-
-
-  try{
-
-    const response =
-      await fetch(
-
-        SUPABASE_URL +
-        "/functions/v1/create-employee",
-
-        {
-
-          method:"POST",
-
-          headers:{
-
-            "Content-Type":
-              "application/json",
-
-            "Authorization":
-              "Bearer " +
-              session.access_token
-
-          },
-
-          body:
-            JSON.stringify({
-
-              name:name,
-
-              username:email,
-
-              password:password
-
-            })
-
-        }
-
-      );
-
-
-    const result =
-      await response.json();
-
-
-    if(!response.ok){
+      await db.auth.signOut();
 
       throw new Error(
-        result.error ||
-        "فشل إنشاء الموظف"
+        "هذا الحساب غير فعال"
       );
 
     }
 
 
-    showMessage(
-      message,
-      "تم إنشاء حساب الموظف بنجاح ✅",
-      true
-    );
+    currentEmployee = data;
 
 
-    document
-    .getElementById(
-      "newEmployeeName"
-    )
-    .value = "";
+    $("loginSection")
+      .classList
+      .add("hidden");
+
+    $("appSection")
+      .classList
+      .remove("hidden");
 
 
-    document
-    .getElementById(
-      "newEmployeeEmail"
-    )
-    .value = "";
+    $("employeeName").textContent =
+      data.name;
+
+    $("employeeRole").textContent =
+      data.role === "admin"
+        ? "مدير"
+        : "موظف";
 
 
-    document
-    .getElementById(
-      "newEmployeePassword"
-    )
-    .value = "";
+    $("startEmployeeName").textContent =
+      data.name;
 
 
-  }catch(error){
+    if (data.role === "admin") {
 
-    showMessage(
-      message,
-      error.message
-    );
+      $("adminSection")
+        .classList
+        .remove("hidden");
 
-  }
+      $("employeeSection")
+        .classList
+        .add("hidden");
 
+      await loadEmployees();
+      await loadShifts();
 
-  button.disabled = false;
+    } else {
 
-  button.textContent =
-    "إنشاء حساب الموظف";
+      $("adminSection")
+        .classList
+        .add("hidden");
 
-});
+      $("employeeSection")
+        .classList
+        .remove("hidden");
 
+      await checkOpenShift();
 
-/* ================= عرض الشفتات للمدير ================= */
-
-async function loadShifts(){
-
-  if(
-    !currentEmployee ||
-    currentEmployee.role !== "admin"
-  ){
-
-    return;
-
-  }
-
-
-  const {
-    data,
-    error
-  } =
-  await supabase
-  .from("shifts")
-  .select("*")
-  .order(
-    "start_date",
-    {
-      ascending:false
     }
-  )
-  .limit(300);
-
-
-  const table =
-    document
-    .getElementById(
-      "shiftsTable"
-    );
-
-
-  if(error){
-
-    table.innerHTML =
-      `
-      <tr>
-        <td colspan="9">
-          ${error.message}
-        </td>
-      </tr>
-      `;
-
-    return;
 
   }
 
 
-  const selectedDate =
-    document
-    .getElementById(
-      "searchDate"
-    )
-    .value;
+  // إظهار إضافة موظف
+  $("showAddEmployeeButton")
+    .addEventListener(
+      "click",
+      () => {
 
-
-  const filtered =
-    (data || [])
-    .filter(
-      shift=>{
-
-        if(!selectedDate){
-
-          return true;
-
-        }
-
-
-        return
-          shift.start_date
-          .slice(0,10)
-          ===
-          selectedDate;
+        $("addEmployeeBox")
+          .classList
+          .remove("hidden");
 
       }
     );
 
 
-  if(!filtered.length){
+  // إلغاء
+  $("cancelAddEmployeeButton")
+    .addEventListener(
+      "click",
+      () => {
 
-    table.innerHTML =
-      `
-      <tr>
-        <td colspan="9">
-          لا توجد بيانات.
-        </td>
-      </tr>
-      `;
+        $("addEmployeeBox")
+          .classList
+          .add("hidden");
 
-    return;
+      }
+    );
+
+
+  // إضافة موظف
+  $("createEmployeeButton")
+    .addEventListener(
+      "click",
+      async () => {
+
+        const name =
+          $("newEmployeeName")
+            .value
+            .trim();
+
+        const username =
+          $("newEmployeeUsername")
+            .value
+            .trim();
+
+        const password =
+          $("newEmployeePassword")
+            .value;
+
+
+        if (!name ||
+            !username ||
+            !password) {
+
+          showMessage(
+            "املأ جميع الحقول",
+            "error"
+          );
+
+          return;
+        }
+
+
+        if (password.length < 6) {
+
+          showMessage(
+            "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+            "error"
+          );
+
+          return;
+        }
+
+
+        const button =
+          $("createEmployeeButton");
+
+        button.disabled = true;
+        button.textContent =
+          "جارِ إنشاء الموظف...";
+
+
+        try {
+
+          /*
+            مهم:
+            invoke() يرسل جلسة المدير الحالية
+            إلى Edge Function.
+          */
+
+          const {
+            data,
+            error
+          } = await db.functions.invoke(
+            "create-employee",
+            {
+              body: {
+                name: name,
+                username: username,
+                password: password
+              }
+            }
+          );
+
+
+          if (error) {
+
+            console.error(
+              "Function error:",
+              error
+            );
+
+            throw new Error(
+              error.message ||
+              "تعذر الاتصال بخدمة إضافة الموظف"
+            );
+
+          }
+
+
+          if (
+            data &&
+            data.error
+          ) {
+
+            throw new Error(
+              data.error
+            );
+
+          }
+
+
+          showMessage(
+            "تمت إضافة الموظف بنجاح",
+            "success"
+          );
+
+
+          $("newEmployeeName").value = "";
+          $("newEmployeeUsername").value = "";
+          $("newEmployeePassword").value = "";
+
+
+          $("addEmployeeBox")
+            .classList
+            .add("hidden");
+
+
+          await loadEmployees();
+
+
+        } catch (error) {
+
+          console.error(error);
+
+          showMessage(
+            "خطأ: " +
+            (
+              error.message ||
+              "حدث خطأ أثناء إضافة الموظف"
+            ),
+            "error"
+          );
+
+        }
+
+
+        button.disabled = false;
+        button.textContent =
+          "حفظ الموظف";
+
+      }
+    );
+
+
+  // تحميل الموظفين
+  async function loadEmployees() {
+
+    const {
+      data,
+      error
+    } = await db
+      .from("employees")
+      .select(
+        "id,name,username,role,active,created_at"
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+    if (error) {
+
+      $("employeesList").innerHTML =
+        `<div class="status error">
+          ${error.message}
+        </div>`;
+
+      return;
+    }
+
+
+    if (!data.length) {
+
+      $("employeesList").innerHTML =
+        "لا يوجد موظفون.";
+
+      return;
+    }
+
+
+    $("employeesList").innerHTML =
+      data
+        .map(
+          employee => `
+
+            <div class="employee-box">
+
+              <strong>
+                ${escapeHtml(employee.name)}
+              </strong>
+
+              <div>
+                المستخدم:
+                ${escapeHtml(employee.username)}
+              </div>
+
+              <div>
+                الصلاحية:
+                ${
+                  employee.role === "admin"
+                    ? "مدير"
+                    : "موظف"
+                }
+              </div>
+
+              <div>
+                الحالة:
+                ${
+                  employee.active
+                    ? "فعال"
+                    : "غير فعال"
+                }
+              </div>
+
+            </div>
+
+          `
+        )
+        .join("");
 
   }
 
 
-  table.innerHTML =
-    filtered
-    .map(
-      shift=>`
+  // تحميل الشفتات
+  $("loadShiftsButton")
+    .addEventListener(
+      "click",
+      loadShifts
+    );
 
-      <tr>
 
-        <td>
-          ${shift.employee_id}
-        </td>
+  async function loadShifts() {
 
-        <td>
-          ${new Date(
-            shift.start_date
-          ).toLocaleString(
-            "ar-IQ"
-          )}
-        </td>
+    $("shiftsList").innerHTML =
+      "جارِ تحميل الشفتات...";
 
-        <td>
-          ${money(
-            shift.starting_cash
-          )}
-        </td>
 
-        <td>
-          ${money(
-            shift.reinforcement_amount
-          )}
-        </td>
+    const {
+      data,
+      error
+    } = await db
+      .from("shifts")
+      .select(
+        "*, employees(name,username)"
+      )
+      .order(
+        "start_date",
+        {
+          ascending: false
+        }
+      )
+      .limit(100);
 
-        <td>
-          ${shift.unsold_transactions_count || 0}
-          × 2000 =
-          ${money(
-            shift.unsold_transactions_amount
-          )}
-        </td>
 
-        <td>
-          ${money(
-            shift.unsold_misc_amount
-          )}
-        </td>
+    if (error) {
 
-        <td>
-          ${
-            shift.end_date
-            ?
-            new Date(
-              shift.end_date
-            ).toLocaleString(
-              "ar-IQ"
+      $("shiftsList").innerHTML =
+        `<div class="status error">
+          ${error.message}
+        </div>`;
+
+      return;
+    }
+
+
+    if (!data.length) {
+
+      $("shiftsList").innerHTML =
+        "لا توجد شفتات.";
+
+      return;
+    }
+
+
+    $("shiftsList").innerHTML =
+      data
+        .map(
+          shift => {
+
+            const employee =
+              shift.employees;
+
+            return `
+
+              <div class="employee-box">
+
+                <strong>
+                  ${escapeHtml(
+                    employee?.name || "غير معروف"
+                  )}
+                </strong>
+
+                <div>
+                  بدء الشفت:
+                  ${formatDate(
+                    shift.start_date
+                  )}
+                </div>
+
+                <div>
+                  الحالة:
+                  ${
+                    shift.status === "open"
+                      ? "مفتوح"
+                      : "مكتمل"
+                  }
+                </div>
+
+                <div>
+                  الإيراد الابتدائي:
+                  ${money(
+                    shift.starting_cash
+                  )} $
+                </div>
+
+                <div>
+                  المبلغ المعزز:
+                  ${money(
+                    shift.reinforcement_amount
+                  )} $
+                </div>
+
+                <div>
+                  غير المباعة:
+                  ${
+                    shift.unsold_transactions_count || 0
+                  }
+                  معاملة =
+                  ${money(
+                    shift.unsold_transactions_amount
+                  )} $
+                </div>
+
+                <div>
+                  المتفرقة:
+                  ${
+                    shift.sold_misc_count || 0
+                  }
+                </div>
+
+                <div>
+                  الملاحظات:
+                  ${
+                    escapeHtml(
+                      shift.notes || "-"
+                    )
+                  }
+                </div>
+
+              </div>
+
+            `;
+
+          }
+        )
+        .join("");
+
+  }
+
+
+  // بدء الشفت
+  $("startShiftButton")
+    .addEventListener(
+      "click",
+      async () => {
+
+        const startingCash =
+          Number(
+            $("startingCash").value || 0
+          );
+
+
+        if (startingCash < 0) {
+
+          showMessage(
+            "الإيراد الابتدائي غير صحيح",
+            "error"
+          );
+
+          return;
+        }
+
+
+        try {
+
+          const {
+            data: existing,
+            error: checkError
+          } = await db
+            .from("shifts")
+            .select("*")
+            .eq(
+              "employee_id",
+              currentEmployee.id
             )
-            :
-            "-"
+            .eq(
+              "status",
+              "open"
+            )
+            .maybeSingle();
+
+
+          if (checkError)
+            throw checkError;
+
+
+          if (existing) {
+
+            currentShift = existing;
+
+            showFinishShift();
+
+            return;
+
           }
-        </td>
-
-        <td>
-          ${
-            shift.status === "open"
-            ?
-            "مفتوح"
-            :
-            "منتهي"
-          }
-        </td>
-
-        <td>
-          ${shift.notes || "-"}
-        </td>
-
-      </tr>
-
-      `
-    )
-    .join("");
-
-}
 
 
-document
-.getElementById("searchButton")
-.addEventListener(
-"click",
-loadShifts
-);
+          const {
+            data,
+            error
+          } = await db
+            .from("shifts")
+            .insert({
+
+              employee_id:
+                currentEmployee.id,
+
+              starting_cash:
+                startingCash,
+
+              status:
+                "open"
+
+            })
+            .select("*")
+            .single();
 
 
-document
-.getElementById("allShiftsButton")
-.addEventListener(
-"click",
-()=>{
-
-  document
-  .getElementById(
-    "searchDate"
-  )
-  .value = "";
-
-  loadShifts();
-
-});
+          if (error)
+            throw error;
 
 
-/* ================= تسجيل الخروج ================= */
+          currentShift = data;
 
-document
-.getElementById("logout")
-.addEventListener(
-"click",
-async ()=>{
+          $("startingCash").value = "";
 
-  await supabase
-  .auth
-  .signOut();
-
-  location.reload();
-
-});
+          showFinishShift();
 
 
-/* ================= تشغيل ================= */
+          showMessage(
+            "تم بدء الشفت بنجاح",
+            "success"
+          );
 
-loadSystem();
 
-</script>
+        } catch (error) {
 
-</body>
-</html>
+          console.error(error);
+
+          showMessage(
+            error.message ||
+            "حدث خطأ أثناء بدء الشفت",
+            "error"
+          );
+
+        }
+
+      }
+    );
+
+
+  // البحث عن شفت مفتوح
+  async function checkOpenShift() {
+
+    try {
+
+      const {
+        data,
+        error
+      } = await db
+        .from("shifts")
+        .select("*")
+        .eq(
+          "employee_id",
+          currentEmployee.id
+        )
+        .eq(
+          "status",
+          "open"
+        )
+        .maybeSingle();
+
+
+      if (error)
+        throw error;
+
+
+      if (data) {
+
+        currentShift = data;
+
+        showFinishShift();
+
+      } else {
+
+        $("startShiftBox")
+          .classList
+          .remove("hidden");
+
+        $("finishShiftBox")
+          .classList
+          .add("hidden");
+
+        $("completedShiftBox")
+          .classList
+          .add("hidden");
+
+      }
+
+    } catch (error) {
+
+      showMessage(
+        error.message,
+        "error"
+      );
+
+   
