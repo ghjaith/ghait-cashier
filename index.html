@@ -1,786 +1,2168 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>نظام مطابقة الصناديق</title>
+<title>نظام مطابقة الصناديق</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: Arial, Tahoma, sans-serif;
-    }
+<style>
 
-    body {
-      margin: 0;
-      background: #f1f5f9;
-      color: #111827;
-    }
+*{
+  box-sizing:border-box;
+  font-family:Tahoma,Arial,sans-serif;
+}
 
-    .topbar {
-      background: #111827;
-      color: white;
-      padding: 16px 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
+body{
+  margin:0;
+  background:#f4f6f9;
+  color:#172033;
+}
 
-    .topbar h1 {
-      margin: 0;
-      font-size: 22px;
-    }
+header{
+  background:#111827;
+  color:white;
+  padding:16px 5%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
+}
 
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 14px;
-    }
+header h1{
+  margin:0;
+  font-size:22px;
+}
 
-    .logout {
-      background: #dc2626;
-      border: none;
-      color: white;
-      padding: 9px 15px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-    }
+.user{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
 
-    .container {
-      width: 94%;
-      max-width: 1100px;
-      margin: 25px auto;
-    }
+.logout{
+  border:0;
+  background:#dc2626;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+}
 
-    .welcome {
-      background: white;
-      padding: 22px;
-      border-radius: 16px;
-      box-shadow: 0 4px 15px rgba(0,0,0,.06);
-      margin-bottom: 20px;
-    }
+.container{
+  width:94%;
+  max-width:1150px;
+  margin:25px auto;
+}
 
-    .welcome h2 {
-      margin: 0 0 8px;
-      color: #1e3a8a;
-    }
+.card{
+  background:white;
+  border-radius:16px;
+  padding:22px;
+  margin-bottom:20px;
+  box-shadow:0 5px 20px rgba(0,0,0,.06);
+}
 
-    .welcome p {
-      margin: 0;
-      color: #64748b;
-    }
+.login{
+  max-width:430px;
+  margin:70px auto;
+}
 
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 25px;
-      box-shadow: 0 4px 15px rgba(0,0,0,.06);
-      margin-bottom: 20px;
-    }
+h2,h3{
+  margin-top:0;
+  color:#1e3a8a;
+}
 
-    .card h3 {
-      margin-top: 0;
-      color: #1e3a8a;
-      font-size: 20px;
-    }
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:16px;
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 18px;
-    }
+.field label{
+  display:block;
+  font-weight:bold;
+  margin-bottom:7px;
+}
 
-    .field label {
-      display: block;
-      margin-bottom: 7px;
-      font-weight: bold;
-    }
+.field input,
+.field textarea{
+  width:100%;
+  padding:13px;
+  border:1px solid #d1d5db;
+  border-radius:9px;
+  font-size:15px;
+}
 
-    .field input {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #cbd5e1;
-      border-radius: 9px;
-      font-size: 16px;
-      outline: none;
-    }
+.field textarea{
+  min-height:100px;
+  resize:vertical;
+}
 
-    .field input:focus {
-      border-color: #2563eb;
-    }
+.btn{
+  border:0;
+  border-radius:9px;
+  padding:12px 18px;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
 
-    .btn {
-      border: none;
-      padding: 13px 20px;
-      border-radius: 9px;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: bold;
-      color: white;
-    }
+.blue{
+  background:#2563eb;
+}
 
-    .btn-primary {
-      background: #2563eb;
-    }
+.green{
+  background:#16a34a;
+}
 
-    .btn-primary:hover {
-      background: #1d4ed8;
-    }
+.red{
+  background:#dc2626;
+}
 
-    .btn-danger {
-      background: #dc2626;
-    }
+.gray{
+  background:#475569;
+}
 
-    .btn-success {
-      background: #16a34a;
-    }
+.btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
 
-    .actions {
-      margin-top: 22px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+.hidden{
+  display:none !important;
+}
 
-    .message {
-      margin-top: 15px;
-      font-weight: bold;
-    }
+.notice{
+  padding:13px;
+  border-radius:9px;
+  margin:15px 0;
+  background:#eff6ff;
+  border:1px solid #bfdbfe;
+}
 
-    .hidden {
-      display: none !important;
-    }
+.success{
+  background:#f0fdf4;
+  border-color:#bbf7d0;
+}
 
-    .info-box {
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 15px;
-      line-height: 1.8;
-    }
+.error{
+  background:#fef2f2;
+  border-color:#fecaca;
+}
 
-    .admin-box {
-      background: #fef3c7;
-      border: 1px solid #fde68a;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 15px;
-    }
+.tabs{
+  display:flex;
+  gap:8px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
 
-    .footer {
-      text-align: center;
-      padding: 25px;
-      color: #64748b;
-      font-size: 14px;
-    }
+.tab{
+  border:0;
+  background:#e5e7eb;
+  padding:11px 18px;
+  border-radius:9px;
+  font-weight:bold;
+  cursor:pointer;
+}
 
-    @media (max-width: 700px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
+.tab.active{
+  background:#2563eb;
+  color:white;
+}
 
-      .topbar {
-        align-items: flex-start;
-      }
+.total{
+  font-size:20px;
+  font-weight:bold;
+  margin:15px 0;
+}
 
-      .user-info {
-        width: 100%;
-        justify-content: space-between;
-      }
-    }
-  </style>
+.misc-list{
+  margin-top:15px;
+}
+
+.misc-item{
+  display:grid;
+  grid-template-columns:1.5fr 1fr auto;
+  gap:8px;
+  margin-bottom:8px;
+}
+
+.misc-item input{
+  padding:11px;
+  border:1px solid #d1d5db;
+  border-radius:8px;
+}
+
+.table-box{
+  overflow:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:800px;
+}
+
+th,td{
+  padding:11px;
+  border-bottom:1px solid #e5e7eb;
+  text-align:right;
+}
+
+th{
+  background:#f8fafc;
+}
+
+.footer{
+  text-align:center;
+  color:#64748b;
+  padding:25px;
+}
+
+@media(max-width:700px){
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .misc-item{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
 </head>
 
 <body>
 
-  <div class="topbar">
+<header>
 
-    <h1>نظام مطابقة الصناديق</h1>
+  <h1>نظام مطابقة الصناديق</h1>
 
-    <div class="user-info">
-      <span id="userName">جاري التحميل...</span>
-      <button class="logout" id="logoutButton">
-        تسجيل الخروج
-      </button>
+  <div class="user">
+
+    <span id="userInfo">
+      جاري التحميل...
+    </span>
+
+    <button class="logout" id="logout">
+      تسجيل الخروج
+    </button>
+
+  </div>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- تسجيل الدخول -->
+
+<section id="loginSection" class="card login">
+
+  <h2>تسجيل الدخول</h2>
+
+  <div class="field">
+
+    <label>
+      اسم المستخدم
+    </label>
+
+    <input
+      id="loginEmail"
+      type="email"
+      placeholder="اسم المستخدم"
+    >
+
+  </div>
+
+  <br>
+
+  <div class="field">
+
+    <label>
+      كلمة المرور
+    </label>
+
+    <input
+      id="loginPassword"
+      type="password"
+      placeholder="كلمة المرور"
+    >
+
+  </div>
+
+  <br>
+
+  <button
+    class="btn blue"
+    id="loginButton"
+  >
+    دخول
+  </button>
+
+  <div
+    id="loginMessage"
+    class="notice hidden"
+  ></div>
+
+</section>
+
+
+<!-- النظام -->
+
+<section
+  id="systemSection"
+  class="hidden"
+>
+
+
+<div class="tabs">
+
+  <button
+    class="tab active"
+    id="shiftTab"
+  >
+    الشفت
+  </button>
+
+  <button
+    class="tab hidden"
+    id="adminTab"
+  >
+    لوحة المدير
+  </button>
+
+</div>
+
+
+<!-- ================= الشفت ================= -->
+
+<section
+  id="shiftPage"
+  class="card"
+>
+
+  <h2>شفت الموظف</h2>
+
+
+  <!-- بدء الشفت -->
+
+  <div id="startShiftBox">
+
+    <div class="grid">
+
+      <div class="field">
+
+        <label>
+          اسم الموظف
+        </label>
+
+        <input
+          id="employeeName"
+          readonly
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          الإيراد الابتدائي
+        </label>
+
+        <input
+          id="startingCash"
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder="أدخل الإيراد الابتدائي"
+        >
+
+      </div>
+
     </div>
+
+    <br>
+
+    <button
+      class="btn blue"
+      id="startShiftButton"
+    >
+      حفظ بدء الشفت
+    </button>
+
+    <div
+      id="startMessage"
+      class="notice hidden"
+    ></div>
 
   </div>
 
 
-  <main class="container">
+  <!-- الشفت المفتوح -->
 
-    <div class="welcome">
+  <div
+    id="openShiftBox"
+    class="hidden"
+  >
 
-      <h2>
-        أهلاً بك، <span id="welcomeName">...</span> 👋
-      </h2>
+    <div class="notice success">
 
-      <p>
-        نظام إدارة ومطابقة الصناديق والورديات
-      </p>
+      الشفت مفتوح ✅
+
+      <br><br>
+
+      وقت البداية:
+      <strong id="startDate"></strong>
+
+      <br>
+
+      الإيراد الابتدائي:
+      <strong id="startAmount"></strong>
+      دولار
 
     </div>
 
 
-    <!-- قسم بدء الوردية -->
-
-    <section class="card">
-
-      <h3>💵 بدء وردية جديدة</h3>
-
-      <div class="grid">
-
-        <div class="field">
-
-          <label>
-            اسم الكاشير
-          </label>
-
-          <input
-            type="text"
-            id="cashierName"
-            readonly
-          >
-
-        </div>
+    <h3>
+      نهاية الشفت
+    </h3>
 
 
-        <div class="field">
+    <!-- التعزيز -->
 
-          <label>
-            المبلغ الابتدائي بالصندوق
-          </label>
+    <div class="field">
 
-          <input
-            type="number"
-            id="startingCash"
-            min="0"
-            step="0.01"
-            placeholder="مثال: 500000"
-          >
+      <label>
+        المبلغ المعزز
+      </label>
 
-        </div>
-
-      </div>
-
-
-      <div class="actions">
-
-        <button
-          class="btn btn-primary"
-          id="startShiftButton"
-        >
-          بدء الوردية
-        </button>
-
-      </div>
-
-
-      <div
-        class="message"
-        id="shiftMessage"
-      ></div>
-
-
-      <div
-        class="info-box hidden"
-        id="shiftInfo"
+      <input
+        id="reinforcement"
+        type="number"
+        min="0"
+        step="0.01"
+        value="0"
       >
 
-        <strong>تم بدء الوردية بنجاح ✅</strong>
-
-        <br><br>
-
-        وقت بداية الوردية:
-        <span id="shiftStartTime"></span>
-
-        <br>
-
-        المبلغ الابتدائي:
-        <span id="shiftStartingAmount"></span>
-
-      </div>
-
-    </section>
+    </div>
 
 
-    <!-- قسم مطابقة الصندوق -->
+    <br>
 
-    <section
-      class="card hidden"
-      id="matchingSection"
+
+    <!-- غير المباعة -->
+
+    <h3>
+      المعاملات غير المباعة
+    </h3>
+
+    <div class="field">
+
+      <label>
+        عدد المعاملات غير المباعة
+      </label>
+
+      <input
+        id="unsoldCount"
+        type="number"
+        min="0"
+        value="0"
+      >
+
+    </div>
+
+
+    <div class="notice">
+
+      قيمة المعاملات غير المباعة:
+
+      <strong>
+        <span id="unsoldAmount">
+          0
+        </span>
+        دولار
+      </strong>
+
+      <br>
+
+      العدد × 2,000 دولار
+
+    </div>
+
+
+    <!-- المتفرقة -->
+
+    <h3>
+      المتفرقة
+    </h3>
+
+
+    <div class="field">
+
+      <label>
+        عدد المتفرقات
+      </label>
+
+      <input
+        id="miscCount"
+        type="number"
+        min="0"
+        value="0"
+      >
+
+    </div>
+
+
+    <div
+      id="miscList"
+      class="misc-list"
+    ></div>
+
+
+    <div class="total">
+
+      مجموع المتفرقة:
+
+      <span id="miscTotal">
+        0
+      </span>
+
+      دولار
+
+    </div>
+
+
+    <!-- الملاحظات -->
+
+    <h3>
+      ملاحظات
+    </h3>
+
+    <div class="field">
+
+      <textarea
+        id="notes"
+        placeholder="اكتب الملاحظات هنا..."
+      ></textarea>
+
+    </div>
+
+
+    <br>
+
+
+    <button
+      class="btn green"
+      id="finishShiftButton"
     >
+      حفظ وإنهاء الشفت
+    </button>
 
-      <h3>📋 مطابقة الصندوق</h3>
-
-      <p>
-        بعد بدء الوردية ستظهر هنا تفاصيل المبيعات والمعاملات
-        والمبالغ غير المباعة والتسوية النهائية.
-      </p>
-
-      <div class="grid">
-
-        <div class="field">
-
-          <label>
-            مبلغ التعزيز للصندوق
-          </label>
-
-          <input
-            type="number"
-            id="reinforcement"
-            min="0"
-            step="0.01"
-            placeholder="0"
-          >
-
-        </div>
-
-
-        <div class="field">
-
-          <label>
-            عدد المعاملات المباعة
-          </label>
-
-          <input
-            type="number"
-            id="soldTransactionsCount"
-            min="0"
-            value="0"
-          >
-
-        </div>
-
-      </div>
-
-
-      <div class="info-box">
-
-        سعر المعاملة القياسية:
-        <strong>2,000 دولار</strong>
-
-        <br>
-
-        إجمالي المعاملات المباعة:
-        <strong>
-          <span id="soldTransactionsAmount">0</span>
-          دولار
-        </strong>
-
-      </div>
-
-    </section>
-
-
-    <!-- لوحة المدير -->
-
-    <section
-      class="card hidden"
-      id="adminSection"
-    >
-
-      <h3>👑 لوحة المدير</h3>
-
-      <div class="admin-box">
-
-        لديك صلاحية المدير.
-
-        <br>
-
-        سيتم من هنا لاحقًا إضافة:
-
-        <ul>
-          <li>متابعة جميع الورديات</li>
-          <li>إدارة الموظفين</li>
-          <li>البحث والتصفية</li>
-          <li>تعديل وإلغاء الورديات</li>
-          <li>التقارير والطباعة</li>
-          <li>إدارة المعاملات غير المباعة</li>
-        </ul>
-
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <div class="footer">
-    07710621453
   </div>
 
 
-  <script type="module">
+  <!-- بعد الإنهاء -->
 
-    import { createClient } from
-      "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+  <div
+    id="finishedBox"
+    class="hidden"
+  >
 
+    <div class="notice success">
 
-    const SUPABASE_URL =
-      "https://paylauzgicnocexukpcg.supabase.co";
+      تم إنهاء الشفت وحفظ البيانات بنجاح ✅
 
+    </div>
 
-    const SUPABASE_KEY =
-      "sb_publishable_Tcq8m6WDJWycpoPxFZObWQ_bkMYwPSv";
+  </div>
 
-
-    const supabase =
-      createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-      );
+</section>
 
 
-    let currentEmployee = null;
+<!-- ================= لوحة المدير ================= -->
 
-    let currentShift = null;
+<section
+  id="adminPage"
+  class="card hidden"
+>
 
-
-    async function loadEmployee() {
-
-      const {
-        data: {
-          user
-        }
-      } = await supabase.auth.getUser();
+  <h2>
+    👑 لوحة المدير
+  </h2>
 
 
-      if (!user) {
+  <!-- إضافة موظف -->
 
-        window.location.reload();
+  <div class="card">
 
-        return;
-
-      }
-
-
-      const {
-        data: employee,
-        error
-      } = await supabase
-        .from("employees")
-        .select(
-          "id,name,username,role,active"
-        )
-        .eq(
-          "auth_user_id",
-          user.id
-        )
-        .single();
+    <h3>
+      إضافة موظف جديد
+    </h3>
 
 
-      if (error || !employee) {
+    <div class="grid">
 
-        await supabase.auth.signOut();
+      <div class="field">
 
-        alert(
-          "لم يتم العثور على بيانات الموظف"
-        );
+        <label>
+          اسم الموظف
+        </label>
 
-        window.location.reload();
+        <input
+          id="newEmployeeName"
+          placeholder="مثال: أحمد"
+        >
 
-        return;
-
-      }
-
-
-      if (!employee.active) {
-
-        await supabase.auth.signOut();
-
-        alert(
-          "هذا الحساب غير فعال"
-        );
-
-        window.location.reload();
-
-        return;
-
-      }
+      </div>
 
 
-      currentEmployee = employee;
+      <div class="field">
+
+        <label>
+          اسم المستخدم
+        </label>
+
+        <input
+          id="newEmployeeEmail"
+          type="email"
+          placeholder="مثال: ahmed@gmail.com"
+        >
+
+      </div>
 
 
-      document.getElementById(
-        "userName"
-      ).textContent =
-        employee.name +
-        " - " +
-        employee.role;
+      <div class="field">
+
+        <label>
+          كلمة المرور
+        </label>
+
+        <input
+          id="newEmployeePassword"
+          type="password"
+          placeholder="6 أحرف أو أكثر"
+        >
+
+      </div>
+
+    </div>
 
 
-      document.getElementById(
-        "welcomeName"
-      ).textContent =
-        employee.name;
+    <br>
+
+    <button
+      class="btn blue"
+      id="createEmployeeButton"
+    >
+      إنشاء حساب الموظف
+    </button>
 
 
-      document.getElementById(
-        "cashierName"
-      ).value =
-        employee.name;
+    <div
+      id="employeeMessage"
+      class="notice hidden"
+    ></div>
+
+  </div>
 
 
-      if (employee.role === "admin") {
+  <!-- البحث -->
 
-        document.getElementById(
-          "adminSection"
-        ).classList.remove(
-          "hidden"
-        );
+  <div class="card">
 
-      }
+    <h3>
+      البحث بالورديات
+    </h3>
 
 
-      await checkOpenShift();
+    <div class="grid">
 
+      <div class="field">
+
+        <label>
+          التاريخ
+        </label>
+
+        <input
+          id="searchDate"
+          type="date"
+        >
+
+      </div>
+
+    </div>
+
+
+    <br>
+
+    <button
+      class="btn gray"
+      id="searchButton"
+    >
+      بحث
+    </button>
+
+    <button
+      class="btn blue"
+      id="allShiftsButton"
+    >
+      عرض الكل
+    </button>
+
+  </div>
+
+
+  <!-- الشفتات -->
+
+  <div class="card">
+
+    <h3>
+      جميع الشفتات
+    </h3>
+
+    <div class="table-box">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>
+              الموظف
+            </th>
+
+            <th>
+              بداية الشفت
+            </th>
+
+            <th>
+              الإيراد
+            </th>
+
+            <th>
+              التعزيز
+            </th>
+
+            <th>
+              غير المباعة
+            </th>
+
+            <th>
+              المتفرقة
+            </th>
+
+            <th>
+              النهاية
+            </th>
+
+            <th>
+              الحالة
+            </th>
+
+            <th>
+              الملاحظات
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody id="shiftsTable">
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+</section>
+
+</div>
+
+
+<div class="footer">
+  07710621453
+</div>
+
+
+<script type="module">
+
+import {
+  createClient
+}
+from
+"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+
+const SUPABASE_URL =
+"https://paylauzgicnocexukpcg.supabase.co";
+
+
+const SUPABASE_KEY =
+"sb_publishable_Tcq8m6WDJWycpoPxFZObWQ_bkMYwPSv";
+
+
+const supabase =
+createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+let currentUser = null;
+
+let currentEmployee = null;
+
+let currentShift = null;
+
+
+function money(value){
+
+  return Number(
+    value || 0
+  ).toLocaleString(
+    "en-US",
+    {
+      minimumFractionDigits:0,
+      maximumFractionDigits:2
     }
+  );
+
+}
 
 
-    async function checkOpenShift() {
+function showMessage(
+  element,
+  text,
+  success=false
+){
 
-      const {
-        data,
-        error
-      } = await supabase
-        .from("shifts")
-        .select("*")
-        .eq(
-          "employee_id",
-          currentEmployee.id
-        )
-        .eq(
-          "status",
-          "open"
-        )
-        .order(
-          "start_date",
-          {
-            ascending: false
-          }
-        )
-        .limit(1);
+  element.textContent = text;
 
+  element.classList.remove(
+    "hidden"
+  );
 
-      if (error) {
+  element.classList.toggle(
+    "success",
+    success
+  );
 
-        console.error(error);
+  element.classList.toggle(
+    "error",
+    !success
+  );
 
-        return;
-
-      }
+}
 
 
-      if (data && data.length > 0) {
+/* ================= تسجيل الدخول ================= */
 
-        currentShift = data[0];
+document
+.getElementById("loginButton")
+.addEventListener(
+"click",
+async ()=>{
 
-        showOpenShift(
-          data[0]
-        );
+  const email =
+    document
+    .getElementById("loginEmail")
+    .value
+    .trim();
 
-      }
+  const password =
+    document
+    .getElementById("loginPassword")
+    .value;
 
+
+  const message =
+    document
+    .getElementById("loginMessage");
+
+
+  if(!email || !password){
+
+    showMessage(
+      message,
+      "أدخل اسم المستخدم وكلمة المرور."
+    );
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+  await supabase.auth.signInWithPassword({
+
+    email:email,
+
+    password:password
+
+  });
+
+
+  if(error){
+
+    showMessage(
+      message,
+      "بيانات الدخول غير صحيحة."
+    );
+
+    return;
+
+  }
+
+
+  currentUser =
+    data.user;
+
+
+  await loadSystem();
+
+});
+
+
+/* ================= تحميل النظام ================= */
+
+async function loadSystem(){
+
+  const {
+    data:{
+      user
     }
+  } =
+  await supabase.auth.getUser();
 
 
-    function showOpenShift(shift) {
+  if(!user){
 
-      document.getElementById(
-        "shiftInfo"
-      ).classList.remove(
-        "hidden"
-      );
+    document
+    .getElementById("loginSection")
+    .classList
+    .remove("hidden");
 
+    document
+    .getElementById("systemSection")
+    .classList
+    .add("hidden");
 
-      document.getElementById(
-        "matchingSection"
-      ).classList.remove(
-        "hidden"
-      );
+    return;
 
-
-      document.getElementById(
-        "shiftStartTime"
-      ).textContent =
-        new Date(
-          shift.start_date
-        ).toLocaleString(
-          "ar-IQ"
-        );
+  }
 
 
-      document.getElementById(
-        "shiftStartingAmount"
-      ).textContent =
-        Number(
-          shift.starting_cash
-        ).toLocaleString();
+  currentUser = user;
 
 
-      document.getElementById(
-        "startingCash"
-      ).value =
-        shift.starting_cash;
+  const {
+    data:employee,
+    error
+  } =
+  await supabase
+  .from("employees")
+  .select(
+    "id,name,username,role,active"
+  )
+  .eq(
+    "auth_user_id",
+    user.id
+  )
+  .single();
 
 
-      document.getElementById(
-        "startShiftButton"
-      ).disabled = true;
+  if(error || !employee){
+
+    await supabase.auth.signOut();
+
+    alert(
+      "لم يتم العثور على حساب الموظف."
+    );
+
+    location.reload();
+
+    return;
+
+  }
 
 
-      document.getElementById(
-        "shiftMessage"
-      ).textContent =
-        "لديك وردية مفتوحة حاليًا.";
+  if(!employee.active){
 
+    await supabase.auth.signOut();
+
+    alert(
+      "هذا الحساب غير فعال."
+    );
+
+    location.reload();
+
+    return;
+
+  }
+
+
+  currentEmployee =
+    employee;
+
+
+  document
+  .getElementById("loginSection")
+  .classList
+  .add("hidden");
+
+
+  document
+  .getElementById("systemSection")
+  .classList
+  .remove("hidden");
+
+
+  document
+  .getElementById("userInfo")
+  .textContent =
+    employee.name +
+    " - " +
+    (
+      employee.role === "admin"
+      ? "مدير"
+      : "موظف"
+    );
+
+
+  document
+  .getElementById("employeeName")
+  .value =
+    employee.name;
+
+
+  if(
+    employee.role === "admin"
+  ){
+
+    document
+    .getElementById("adminTab")
+    .classList
+    .remove("hidden");
+
+    await loadShifts();
+
+  }
+
+
+  await checkOpenShift();
+
+}
+
+
+/* ================= الشفت المفتوح ================= */
+
+async function checkOpenShift(){
+
+  const {
+    data,
+    error
+  } =
+  await supabase
+  .from("shifts")
+  .select("*")
+  .eq(
+    "employee_id",
+    currentEmployee.id
+  )
+  .eq(
+    "status",
+    "open"
+  )
+  .order(
+    "start_date",
+    {
+      ascending:false
     }
+  )
+  .limit(1);
 
 
-    document.getElementById(
+  if(error){
+
+    console.error(error);
+
+    return;
+
+  }
+
+
+  if(data && data.length){
+
+    currentShift =
+      data[0];
+
+    showOpenShift();
+
+  }else{
+
+    document
+    .getElementById("startShiftBox")
+    .classList
+    .remove("hidden");
+
+    document
+    .getElementById("openShiftBox")
+    .classList
+    .add("hidden");
+
+  }
+
+}
+
+
+function showOpenShift(){
+
+  document
+  .getElementById("startShiftBox")
+  .classList
+  .add("hidden");
+
+
+  document
+  .getElementById("openShiftBox")
+  .classList
+  .remove("hidden");
+
+
+  document
+  .getElementById("startDate")
+  .textContent =
+    new Date(
+      currentShift.start_date
+    ).toLocaleString(
+      "ar-IQ"
+    );
+
+
+  document
+  .getElementById("startAmount")
+  .textContent =
+    money(
+      currentShift.starting_cash
+    );
+
+}
+
+
+/* ================= بدء الشفت ================= */
+
+document
+.getElementById("startShiftButton")
+.addEventListener(
+"click",
+async ()=>{
+
+  const amount =
+    Number(
+      document
+      .getElementById("startingCash")
+      .value
+    );
+
+
+  if(
+    !Number.isFinite(amount) ||
+    amount < 0
+  ){
+
+    showMessage(
+      document.getElementById(
+        "startMessage"
+      ),
+      "أدخل الإيراد الابتدائي بشكل صحيح."
+    );
+
+    return;
+
+  }
+
+
+  const button =
+    document
+    .getElementById(
       "startShiftButton"
-    ).addEventListener(
-      "click",
-      async function() {
-
-        const amount =
-          Number(
-            document.getElementById(
-              "startingCash"
-            ).value
-          );
-
-
-        const message =
-          document.getElementById(
-            "shiftMessage"
-          );
-
-
-        if (
-          isNaN(amount) ||
-          amount < 0
-        ) {
-
-          message.textContent =
-            "أدخل المبلغ الابتدائي بشكل صحيح.";
-
-          return;
-
-        }
-
-
-        this.disabled = true;
-
-        this.textContent =
-          "جاري الحفظ...";
-
-
-        const {
-          data,
-          error
-        } = await supabase
-          .from("shifts")
-          .insert({
-
-            employee_id:
-              currentEmployee.id,
-
-            starting_cash:
-              amount,
-
-            start_date:
-              new Date().toISOString(),
-
-            status:
-              "open"
-
-          })
-          .select()
-          .single();
-
-
-        if (error) {
-
-          console.error(error);
-
-          message.textContent =
-            "حدث خطأ أثناء حفظ الوردية: " +
-            error.message;
-
-          this.disabled = false;
-
-          this.textContent =
-            "بدء الوردية";
-
-          return;
-
-        }
-
-
-        currentShift = data;
-
-
-        message.textContent =
-          "تم حفظ الوردية بنجاح ✅";
-
-
-        showOpenShift(
-          data
-        );
-
-      }
     );
 
 
-    document.getElementById(
-      "soldTransactionsCount"
-    ).addEventListener(
+  button.disabled = true;
+
+  button.textContent =
+    "جاري الحفظ...";
+
+
+  const {
+    data,
+    error
+  } =
+  await supabase
+  .from("shifts")
+  .insert({
+
+    employee_id:
+      currentEmployee.id,
+
+    starting_cash:
+      amount,
+
+    start_date:
+      new Date().toISOString(),
+
+    status:
+      "open"
+
+  })
+  .select()
+  .single();
+
+
+  if(error){
+
+    button.disabled = false;
+
+    button.textContent =
+      "حفظ بدء الشفت";
+
+    showMessage(
+      document.getElementById(
+        "startMessage"
+      ),
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  currentShift =
+    data;
+
+
+  showOpenShift();
+
+});
+
+
+/* ================= غير المباعة ================= */
+
+document
+.getElementById("unsoldCount")
+.addEventListener(
+"input",
+()=>{
+
+  const count =
+    Number(
+      document
+      .getElementById("unsoldCount")
+      .value
+    ) || 0;
+
+
+  document
+  .getElementById("unsoldAmount")
+  .textContent =
+    money(
+      count * 2000
+    );
+
+});
+
+
+/* ================= المتفرقة ================= */
+
+document
+.getElementById("miscCount")
+.addEventListener(
+"input",
+createMiscFields
+);
+
+
+function createMiscFields(){
+
+  const count =
+    Math.max(
+      0,
+      Math.floor(
+        Number(
+          document
+          .getElementById("miscCount")
+          .value
+        ) || 0
+      )
+    );
+
+
+  const box =
+    document
+    .getElementById("miscList");
+
+
+  box.innerHTML = "";
+
+
+  for(
+    let i=0;
+    i<count;
+    i++
+  ){
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+
+    row.className =
+      "misc-item";
+
+
+    row.innerHTML = `
+
+      <input
+        type="text"
+        placeholder="اسم المتفرقة"
+      >
+
+      <input
+        type="number"
+        min="0"
+        step="0.01"
+        placeholder="المبلغ بالدولار"
+      >
+
+      <button
+        class="btn red"
+        type="button"
+      >
+        حذف
+      </button>
+
+    `;
+
+
+    row
+    .querySelector(
+      "input:nth-child(2)"
+    )
+    .addEventListener(
       "input",
-      function() {
-
-        const count =
-          Number(this.value) || 0;
-
-
-        const total =
-          count * 2000;
-
-
-        document.getElementById(
-          "soldTransactionsAmount"
-        ).textContent =
-          total.toLocaleString();
-
-      }
+      calculateMisc
     );
 
 
-    document.getElementById(
-      "logoutButton"
-    ).addEventListener(
+    row
+    .querySelector("button")
+    .addEventListener(
       "click",
-      async function() {
+      ()=>{
 
-        await supabase.auth.signOut();
+        row.remove();
 
-        window.location.reload();
+        calculateMisc();
 
       }
     );
 
 
-    loadEmployee();
+    box.appendChild(
+      row
+    );
 
-  </script>
+  }
+
+
+  calculateMisc();
+
+}
+
+
+function calculateMisc(){
+
+  let total = 0;
+
+
+  document
+  .querySelectorAll(
+    "#miscList .misc-item"
+  )
+  .forEach(
+    row=>{
+
+      const amount =
+        Number(
+          row
+          .querySelector(
+            "input:nth-child(2)"
+          )
+          .value
+        ) || 0;
+
+
+      total += amount;
+
+    }
+  );
+
+
+  document
+  .getElementById("miscTotal")
+  .textContent =
+    money(total);
+
+}
+
+
+/* ================= إنهاء الشفت ================= */
+
+document
+.getElementById("finishShiftButton")
+.addEventListener(
+"click",
+async ()=>{
+
+  if(!currentShift){
+
+    return;
+
+  }
+
+
+  const reinforcement =
+    Number(
+      document
+      .getElementById(
+        "reinforcement"
+      )
+      .value
+    ) || 0;
+
+
+  const unsoldCount =
+    Math.max(
+      0,
+      Math.floor(
+        Number(
+          document
+          .getElementById(
+            "unsoldCount"
+          )
+          .value
+        ) || 0
+      )
+    );
+
+
+  const unsoldAmount =
+    unsoldCount * 2000;
+
+
+  const miscRows =
+    [
+      ...
+      document
+      .querySelectorAll(
+        "#miscList .misc-item"
+      )
+    ];
+
+
+  const miscItems =
+    miscRows
+    .map(
+      row=>({
+
+        name:
+          row
+          .querySelector(
+            "input:nth-child(1)"
+          )
+          .value
+          .trim(),
+
+        amount:
+          Number(
+            row
+            .querySelector(
+              "input:nth-child(2)"
+            )
+            .value
+          ) || 0
+
+      })
+    )
+    .filter(
+      item =>
+        item.name ||
+        item.amount > 0
+    );
+
+
+  const miscTotal =
+    miscItems.reduce(
+      (sum,item)=>
+        sum + item.amount,
+      0
+    );
+
+
+  const notes =
+    document
+    .getElementById("notes")
+    .value
+    .trim();
+
+
+  const button =
+    document
+    .getElementById(
+      "finishShiftButton"
+    );
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "جاري الحفظ...";
+
+
+  const {
+    error
+  } =
+  await supabase
+  .from("shifts")
+  .update({
+
+    reinforcement_amount:
+      reinforcement,
+
+    unsold_transactions_count:
+      unsoldCount,
+
+    unsold_transactions_amount:
+      unsoldAmount,
+
+    unsold_misc_count:
+      miscItems.length,
+
+    unsold_misc_amount:
+      miscTotal,
+
+    notes:
+      notes,
+
+    end_date:
+      new Date().toISOString(),
+
+    ended_at:
+      new Date().toISOString(),
+
+    status:
+      "completed"
+
+  })
+  .eq(
+    "id",
+    currentShift.id
+  );
+
+
+  if(error){
+
+    button.disabled = false;
+
+    button.textContent =
+      "حفظ وإنهاء الشفت";
+
+    alert(
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  if(
+    miscItems.length
+  ){
+
+    const {
+      error:miscError
+    } =
+    await supabase
+    .from("misc_unsold")
+    .insert(
+      miscItems.map(
+        item=>({
+
+          shift_id:
+            currentShift.id,
+
+          name:
+            item.name,
+
+          amount:
+            item.amount
+
+        })
+      )
+    );
+
+
+    if(miscError){
+
+      alert(
+        "تم إنهاء الشفت لكن حدث خطأ بحفظ المتفرقات: " +
+        miscError.message
+      );
+
+    }
+
+  }
+
+
+  alert(
+    "تم إنهاء الشفت وحفظ البيانات بنجاح ✅"
+  );
+
+
+  document
+  .getElementById("openShiftBox")
+  .classList
+  .add("hidden");
+
+
+  document
+  .getElementById("finishedBox")
+  .classList
+  .remove("hidden");
+
+
+  currentShift =
+    null;
+
+
+  if(
+    currentEmployee.role === "admin"
+  ){
+
+    await loadShifts();
+
+  }
+
+});
+
+
+/* ================= لوحة المدير ================= */
+
+document
+.getElementById("adminTab")
+.addEventListener(
+"click",
+async ()=>{
+
+  document
+  .getElementById("shiftPage")
+  .classList
+  .add("hidden");
+
+
+  document
+  .getElementById("adminPage")
+  .classList
+  .remove("hidden");
+
+
+  document
+  .getElementById("shiftTab")
+  .classList
+  .remove("active");
+
+
+  document
+  .getElementById("adminTab")
+  .classList
+  .add("active");
+
+
+  await loadShifts();
+
+});
+
+
+document
+.getElementById("shiftTab")
+.addEventListener(
+"click",
+()=>{
+
+  document
+  .getElementById("adminPage")
+  .classList
+  .add("hidden");
+
+
+  document
+  .getElementById("shiftPage")
+  .classList
+  .remove("hidden");
+
+
+  document
+  .getElementById("adminTab")
+  .classList
+  .remove("active");
+
+
+  document
+  .getElementById("shiftTab")
+  .classList
+  .add("active");
+
+});
+
+
+/* ================= إنشاء موظف ================= */
+
+document
+.getElementById("createEmployeeButton")
+.addEventListener(
+"click",
+async ()=>{
+
+  const name =
+    document
+    .getElementById(
+      "newEmployeeName"
+    )
+    .value
+    .trim();
+
+
+  const email =
+    document
+    .getElementById(
+      "newEmployeeEmail"
+    )
+    .value
+    .trim();
+
+
+  const password =
+    document
+    .getElementById(
+      "newEmployeePassword"
+    )
+    .value;
+
+
+  const message =
+    document
+    .getElementById(
+      "employeeMessage"
+    );
+
+
+  if(
+    !name ||
+    !email ||
+    password.length < 6
+  ){
+
+    showMessage(
+      message,
+      "أدخل الاسم والإيميل وكلمة مرور من 6 أحرف على الأقل."
+    );
+
+    return;
+
+  }
+
+
+  const {
+    data:{
+      session
+    }
+  } =
+  await supabase
+  .auth
+  .getSession();
+
+
+  if(!session){
+
+    return;
+
+  }
+
+
+  const button =
+    document
+    .getElementById(
+      "createEmployeeButton"
+    );
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "جاري إنشاء الحساب...";
+
+
+  try{
+
+    const response =
+      await fetch(
+
+        SUPABASE_URL +
+        "/functions/v1/create-employee",
+
+        {
+
+          method:"POST",
+
+          headers:{
+
+            "Content-Type":
+              "application/json",
+
+            "Authorization":
+              "Bearer " +
+              session.access_token
+
+          },
+
+          body:
+            JSON.stringify({
+
+              name:name,
+
+              username:email,
+
+              password:password
+
+            })
+
+        }
+
+      );
+
+
+    const result =
+      await response.json();
+
+
+    if(!response.ok){
+
+      throw new Error(
+        result.error ||
+        "فشل إنشاء الموظف"
+      );
+
+    }
+
+
+    showMessage(
+      message,
+      "تم إنشاء حساب الموظف بنجاح ✅",
+      true
+    );
+
+
+    document
+    .getElementById(
+      "newEmployeeName"
+    )
+    .value = "";
+
+
+    document
+    .getElementById(
+      "newEmployeeEmail"
+    )
+    .value = "";
+
+
+    document
+    .getElementById(
+      "newEmployeePassword"
+    )
+    .value = "";
+
+
+  }catch(error){
+
+    showMessage(
+      message,
+      error.message
+    );
+
+  }
+
+
+  button.disabled = false;
+
+  button.textContent =
+    "إنشاء حساب الموظف";
+
+});
+
+
+/* ================= عرض الشفتات للمدير ================= */
+
+async function loadShifts(){
+
+  if(
+    !currentEmployee ||
+    currentEmployee.role !== "admin"
+  ){
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+  await supabase
+  .from("shifts")
+  .select("*")
+  .order(
+    "start_date",
+    {
+      ascending:false
+    }
+  )
+  .limit(300);
+
+
+  const table =
+    document
+    .getElementById(
+      "shiftsTable"
+    );
+
+
+  if(error){
+
+    table.innerHTML =
+      `
+      <tr>
+        <td colspan="9">
+          ${error.message}
+        </td>
+      </tr>
+      `;
+
+    return;
+
+  }
+
+
+  const selectedDate =
+    document
+    .getElementById(
+      "searchDate"
+    )
+    .value;
+
+
+  const filtered =
+    (data || [])
+    .filter(
+      shift=>{
+
+        if(!selectedDate){
+
+          return true;
+
+        }
+
+
+        return
+          shift.start_date
+          .slice(0,10)
+          ===
+          selectedDate;
+
+      }
+    );
+
+
+  if(!filtered.length){
+
+    table.innerHTML =
+      `
+      <tr>
+        <td colspan="9">
+          لا توجد بيانات.
+        </td>
+      </tr>
+      `;
+
+    return;
+
+  }
+
+
+  table.innerHTML =
+    filtered
+    .map(
+      shift=>`
+
+      <tr>
+
+        <td>
+          ${shift.employee_id}
+        </td>
+
+        <td>
+          ${new Date(
+            shift.start_date
+          ).toLocaleString(
+            "ar-IQ"
+          )}
+        </td>
+
+        <td>
+          ${money(
+            shift.starting_cash
+          )}
+        </td>
+
+        <td>
+          ${money(
+            shift.reinforcement_amount
+          )}
+        </td>
+
+        <td>
+          ${shift.unsold_transactions_count || 0}
+          × 2000 =
+          ${money(
+            shift.unsold_transactions_amount
+          )}
+        </td>
+
+        <td>
+          ${money(
+            shift.unsold_misc_amount
+          )}
+        </td>
+
+        <td>
+          ${
+            shift.end_date
+            ?
+            new Date(
+              shift.end_date
+            ).toLocaleString(
+              "ar-IQ"
+            )
+            :
+            "-"
+          }
+        </td>
+
+        <td>
+          ${
+            shift.status === "open"
+            ?
+            "مفتوح"
+            :
+            "منتهي"
+          }
+        </td>
+
+        <td>
+          ${shift.notes || "-"}
+        </td>
+
+      </tr>
+
+      `
+    )
+    .join("");
+
+}
+
+
+document
+.getElementById("searchButton")
+.addEventListener(
+"click",
+loadShifts
+);
+
+
+document
+.getElementById("allShiftsButton")
+.addEventListener(
+"click",
+()=>{
+
+  document
+  .getElementById(
+    "searchDate"
+  )
+  .value = "";
+
+  loadShifts();
+
+});
+
+
+/* ================= تسجيل الخروج ================= */
+
+document
+.getElementById("logout")
+.addEventListener(
+"click",
+async ()=>{
+
+  await supabase
+  .auth
+  .signOut();
+
+  location.reload();
+
+});
+
+
+/* ================= تشغيل ================= */
+
+loadSystem();
+
+</script>
 
 </body>
-  </html>
+</html>
