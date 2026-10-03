@@ -1,834 +1,95 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>نظام مطابقة الصناديق</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام مطابقة الصناديق</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
 
-<style>
-*{box-sizing:border-box;font-family:Tahoma,Arial}
-body{margin:0;background:#f3f4f6;color:#111827}
-header{background:#111827;color:white;text-align:center;padding:25px}
-.container{max-width:700px;margin:25px auto;padding:15px}
-.card{background:white;padding:22px;border-radius:15px;margin-bottom:20px;box-shadow:0 3px 15px #0001}
-input,button{width:100%;padding:14px;margin:8px 0;border-radius:9px;font-size:16px}
-input{border:1px solid #ccc}
-button{border:0;background:#2563eb;color:white;font-weight:bold}
-button:disabled{opacity:.6}
-.hidden{display:none}
-.msg{padding:14px;border-radius:9px;margin:12px 0;white-space:pre-wrap;word-break:break-word}
-.error{background:#fee2e2;color:#991b1b}
-.success{background:#dcfce7;color:#166534}
-.info{background:#dbeafe;color:#1e40af}
-.green{background:#16a34a}
-.red{background:#dc2626}
-.box{background:#eef2ff;padding:15px;border-radius:10px;margin:15px 0}
-</style>
+    .box {
+      width: 90%;
+      max-width: 400px;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 25px rgba(0,0,0,.1);
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px;
+      margin: 8px 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 10px;
+      border: 0;
+      border-radius: 8px;
+      background: #111827;
+      color: white;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 16px;
+    }
+  </style>
 </head>
 
 <body>
 
-<header>
-<h1>نظام مطابقة الصناديق</h1>
-<div>إدارة الشفتات ومطابقة الصناديق</div>
-</header>
-
-<div class="container">
-
-<!-- تسجيل الدخول -->
-<div id="loginBox" class="card">
-
-<h2>تسجيل الدخول</h2>
-
-<div id="loginMsg"></div>
-
-<label>اسم المستخدم</label>
-<input id="username" type="email" placeholder="البريد الإلكتروني">
-
-<label>كلمة المرور</label>
-<input id="password" type="password" placeholder="كلمة المرور">
-
-<button id="loginBtn">دخول</button>
-
-</div>
-
-
-<!-- التطبيق -->
-<div id="app" class="hidden">
-
-<div class="card">
-
 <div class="box">
-<b>المستخدم:</b>
-<span id="name"></span>
-<br><br>
-<b>الصلاحية:</b>
-<span id="role"></span>
-</div>
 
-<div id="appMsg"></div>
+  <h2>نظام مطابقة الصناديق</h2>
 
-<button id="logout" class="red">
-تسجيل الخروج
-</button>
+  <input
+    id="username"
+    type="email"
+    placeholder="اسم المستخدم"
+  >
 
-</div>
+  <input
+    id="password"
+    type="password"
+    placeholder="كلمة المرور"
+  >
 
+  <button onclick="testLogin()">
+    تسجيل الدخول
+  </button>
 
-<!-- المدير -->
-<div id="admin" class="card hidden">
-
-<h2>لوحة المدير</h2>
-
-<button id="addBtn" class="green">
-+ إضافة موظف
-</button>
-
-<div id="addBox" class="hidden">
-
-<hr>
-
-<h3>إضافة موظف</h3>
-
-<label>اسم الموظف</label>
-<input id="empName" placeholder="مثلاً أحمد">
-
-<label>اسم المستخدم / البريد</label>
-<input id="empUser" type="email" placeholder="example@gmail.com">
-
-<label>كلمة المرور</label>
-<input id="empPass" type="password" placeholder="6 أحرف على الأقل">
-
-<button id="saveEmp" class="green">
-حفظ الموظف
-</button>
+  <div id="result"></div>
 
 </div>
-
-<hr>
-
-<h3>الموظفون</h3>
-
-<div id="employees">
-جارِ التحميل...
-</div>
-
-</div>
-
-
-<!-- الموظف -->
-<div id="cashier" class="card hidden">
-
-<h2>الشفت</h2>
-
-<div id="startBox">
-
-<h3>بدء الشفت</h3>
-
-<label>الإيراد الابتدائي</label>
-<input id="startCash" type="number" min="0" value="0">
-
-<button id="startBtn" class="green">
-بدء الشفت
-</button>
-
-</div>
-
-
-<div id="finishBox" class="hidden">
-
-<h3>نهاية الشفت</h3>
-
-<label>المبلغ المعزز</label>
-<input id="reinforce" type="number" min="0" value="0">
-
-<label>عدد المعاملات غير المباعة</label>
-<input id="unsold" type="number" min="0" value="0">
-
-<div class="box">
-قيمة غير المباعة:
-<b id="unsoldValue">0</b> $
-</div>
-
-<label>ملاحظات</label>
-<input id="notes" placeholder="الملاحظات">
-
-<button id="finishBtn" class="green">
-إنهاء الشفت
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
 
 <script>
+function testLogin() {
 
-const SUPABASE_URL =
-"https://paylauzgicnocexukpcg.supabase.co";
+  alert("الجافاسكربت يعمل");
 
-const SUPABASE_KEY =
-"sb_publishable_Tcq8m6WDJWycpoPxFZObWQ_bkMYwPSv";
-
-
-let db;
-
-let currentUser = null;
-let currentEmployee = null;
-let currentShift = null;
-
-
-/* رسالة */
-function message(text,type="info"){
-
-document.getElementById("appMsg").innerHTML =
-`<div class="msg ${type}">${text}</div>`;
-
+  document.getElementById("result").innerHTML =
+    "✅ الزر والجافاسكربت يعملان بشكل صحيح";
 }
+</script>
 
-
-function loginMessage(text,type="info"){
-
-document.getElementById("loginMsg").innerHTML =
-`<div class="msg ${type}">${text}</div>`;
-
-}
-
-
-/* تشغيل Supabase */
-try{
-
-db =
-supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
-
-loginMessage(
-"النظام جاهز. أدخل بيانات الدخول.",
-"info"
-);
-
-}catch(e){
-
-loginMessage(
-"خطأ في تشغيل النظام: "+e.message,
-"error"
-);
-
-}
-
-
-/* زر الدخول */
-document
-.getElementById("loginBtn")
-.addEventListener("click",login);
-
-
-/* تسجيل الدخول */
-async function login(){
-
-alert("زر الدخول يعمل الآن");
-
-const username =
-document.getElementById("username").value.trim();
-
-const password =
-document.getElementById("password").value;
-
-
-if(!username || !password){
-
-loginMessage(
-"اكتب اسم المستخدم وكلمة المرور.",
-"error"
-);
-
-return;
-}
-
-
-const btn =
-document.getElementById("loginBtn");
-
-btn.disabled=true;
-btn.textContent="جارِ الدخول...";
-
-loginMessage(
-"جارِ الاتصال بـ Supabase...",
-"info"
-);
-
-
-try{
-
-const result =
-await db.auth.signInWithPassword({
-
-email:username,
-
-password:password
-
-});
-
-
-console.log("LOGIN RESULT",result);
-
-
-if(result.error){
-
-throw new Error(
-result.error.message
-);
-
-}
-
-
-if(!result.data || !result.data.user){
-
-throw new Error(
-"تم الدخول لكن لم تصل بيانات المستخدم."
-);
-
-}
-
-
-currentUser =
-result.data.user;
-
-
-loginMessage(
-"تم تسجيل الدخول. جارِ تحميل الحساب...",
-"success"
-);
-
-
-await loadEmployee();
-
-
-}catch(e){
-
-console.error(e);
-
-
-loginMessage(
-"خطأ تسجيل الدخول:\n"+e.message,
-"error"
-);
-
-}
-
-
-btn.disabled=false;
-btn.textContent="دخول";
-
-}
-
-
-/* تحميل بيانات الموظف */
-async function loadEmployee(){
-
-try{
-
-const result =
-await db
-.from("employees")
-.select("*")
-.eq(
-"auth_user_id",
-currentUser.id
-)
-.maybeSingle();
-
-
-console.log(
-"EMPLOYEE RESULT",
-result
-);
-
-
-if(result.error){
-
-throw new Error(
-"خطأ بقراءة بيانات الموظف: "+
-result.error.message
-);
-
-}
-
-
-if(!result.data){
-
-throw new Error(
-"الحساب موجود في Authentication لكن لا توجد له بيانات في جدول employees."
-);
-
-}
-
-
-currentEmployee =
-result.data;
-
-
-if(!currentEmployee.active){
-
-throw new Error(
-"هذا الحساب غير فعال."
-);
-
-}
-
-
-document
-.getElementById("loginBox")
-.classList.add("hidden");
-
-
-document
-.getElementById("app")
-.classList.remove("hidden");
-
-
-document
-.getElementById("name")
-.textContent =
-currentEmployee.name;
-
-
-document
-.getElementById("role")
-.textContent =
-currentEmployee.role;
-
-
-if(currentEmployee.role==="admin"){
-
-document
-.getElementById("admin")
-.classList.remove("hidden");
-
-document
-.getElementById("cashier")
-.classList.add("hidden");
-
-await loadEmployees();
-
-}else{
-
-document
-.getElementById("cashier")
-.classList.remove("hidden");
-
-document
-.getElementById("admin")
-.classList.add("hidden");
-
-await checkShift();
-
-}
-
-}catch(e){
-
-throw e;
-
-}
-
-}
-
-
-/* إضافة موظف - إظهار */
-document
-.getElementById("addBtn")
-.addEventListener(
-"click",
-()=>{
-
-document
-.getElementById("addBox")
-.classList.remove("hidden");
-
-}
-);
-
-
-/* إضافة موظف */
-document
-.getElementById("saveEmp")
-.addEventListener(
-"click",
-createEmployee
-);
-
-
-async function createEmployee(){
-
-const name =
-document.getElementById("empName").value.trim();
-
-const username =
-document.getElementById("empUser").value.trim();
-
-const password =
-document.getElementById("empPass").value;
-
-
-if(!name||!username||!password){
-
-message(
-"املأ جميع الحقول.",
-"error"
-);
-
-return;
-
-}
-
-
-if(password.length<6){
-
-message(
-"كلمة المرور يجب أن تكون 6 أحرف على الأقل.",
-"error"
-);
-
-return;
-
-}
-
-
-const btn =
-document.getElementById("saveEmp");
-
-btn.disabled=true;
-
-btn.textContent=
-"جارِ إنشاء الموظف...";
-
-
-try{
-
-const session =
-await db.auth.getSession();
-
-
-if(!session.data.session){
-
-throw new Error(
-"جلسة المدير غير موجودة. سجل الدخول من جديد."
-);
-
-}
-
-
-const result =
-await db.functions.invoke(
-"create-employee",
-{
-
-body:{
-name:name,
-username:username,
-password:password
-}
-
-}
-);
-
-
-console.log(
-"CREATE EMPLOYEE",
-result
-);
-
-
-if(result.error){
-
-throw new Error(
-result.error.message
-);
-
-}
-
-
-if(result.data && result.data.error){
-
-throw new Error(
-result.data.error
-);
-
-}
-
-
-message(
-"تمت إضافة الموظف بنجاح.",
-"success"
-);
-
-
-document.getElementById("empName").value="";
-document.getElementById("empUser").value="";
-document.getElementById("empPass").value="";
-
-
-await loadEmployees();
-
-
-}catch(e){
-
-console.error(e);
-
-message(
-"خطأ إضافة الموظف:\n"+e.message,
-"error"
-);
-
-}
-
-
-btn.disabled=false;
-btn.textContent="حفظ الموظف";
-
-}
-
-
-/* الموظفون */
-async function loadEmployees(){
-
-const box =
-document.getElementById("employees");
-
-box.innerHTML=
-"جارِ تحميل الموظفين...";
-
-
-try{
-
-const result =
-await db
-.from("employees")
-.select(
-"id,name,username,role,active"
-)
-.order(
-"created_at",
-{ascending:false}
-);
-
-
-if(result.error){
-
-throw result.error;
-
-}
-
-
-if(!result.data.length){
-
-box.innerHTML=
-"لا يوجد موظفون.";
-
-return;
-
-}
-
-
-box.innerHTML =
-result.data.map(
-x=>`
-
-<div class="box">
-
-<b>${x.name}</b>
-
-<br>
-
-المستخدم:
-${x.username}
-
-<br>
-
-الصلاحية:
-${x.role}
-
-<br>
-
-الحالة:
-${x.active?"فعال":"غير فعال"}
-
-</div>
-
-`
-).join("");
-
-
-}catch(e){
-
-box.innerHTML=
-`<div class="msg error">
-خطأ: ${e.message}
-</div>`;
-
-}
-
-}
-
-
-/* بدء الشفت */
-document
-.getElementById("startBtn")
-.addEventListener(
-"click",
-startShift
-);
-
-
-async function startShift(){
-
-const amount =
-Number(
-document.getElementById("startCash").value||0
-);
-
-
-try{
-
-const existing =
-await db
-.from("shifts")
-.select("*")
-.eq(
-"employee_id",
-currentEmployee.id
-)
-.eq(
-"status",
-"open"
-)
-.maybeSingle();
-
-
-if(existing.error){
-
-throw existing.error;
-
-}
-
-
-if(existing.data){
-
-currentShift =
-existing.data;
-
-showFinish();
-
-return;
-
-}
-
-
-const result =
-await db
-.from("shifts")
-.insert({
-
-employee_id:
-currentEmployee.id,
-
-starting_cash:
-amount,
-
-status:"open"
-
-})
-.select()
-.single();
-
-
-if(result.error){
-
-throw result.error;
-
-}
-
-
-currentShift =
-result.data;
-
-
-showFinish();
-
-
-message(
-"تم بدء الشفت بنجاح.",
-"success"
-);
-
-
-}catch(e){
-
-message(
-"خطأ بدء الشفت:\n"+e.message,
-"error"
-);
-
-}
-
-}
-
-
-/* فحص الشفت */
-async function checkShift(){
-
-try{
-
-const result =
-await db
-.from("shifts")
-.select("*")
-.eq(
-"employee_id",
-currentEmployee.id
-)
-.eq(
-"status",
-"open"
-)
-.maybeSingle();
-
-
-if(result.error){
-
-throw result.error;
-
-}
-
-
-if(result.data){
-
-currentShift =
-result.data;
-
-showFinish();
-
-}
-
-}catch(e){
-
-message(
-"خطأ تحميل الشفت:\n"+e.message,
-"error"
-);
-
-}
-
-}
-
-
-/* إظهار نهاية الشفت */
-function
+</body>
+</html>
