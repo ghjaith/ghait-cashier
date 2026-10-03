@@ -3,15 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>نظام مطابقة الصناديق</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{
-    box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
     margin:0;
@@ -19,6 +16,8 @@ body{
     background:#f3f4f6;
     color:#111827;
 }
+
+.hidden{display:none!important}
 
 .page{
     min-height:100vh;
@@ -28,13 +27,13 @@ body{
     padding:20px;
 }
 
-.box{
+.login-box{
     width:100%;
     max-width:420px;
     background:white;
-    padding:28px;
+    padding:30px;
     border-radius:18px;
-    box-shadow:0 8px 30px rgba(0,0,0,.10);
+    box-shadow:0 8px 30px #0002;
 }
 
 h1{
@@ -54,9 +53,9 @@ label{
     margin-top:14px;
 }
 
-input{
+input,textarea{
     width:100%;
-    padding:14px;
+    padding:13px;
     margin-top:7px;
     border:1px solid #d1d5db;
     border-radius:9px;
@@ -64,31 +63,29 @@ input{
     outline:none;
 }
 
-input:focus{
-    border-color:#111827;
+textarea{
+    min-height:90px;
 }
 
 button{
-    width:100%;
-    padding:14px;
-    margin-top:18px;
     border:0;
     border-radius:9px;
-    background:#111827;
-    color:white;
-    font-size:17px;
+    padding:13px 18px;
+    font-size:16px;
     cursor:pointer;
 }
 
-button:disabled{
-    opacity:.6;
+.login-btn{
+    width:100%;
+    margin-top:18px;
+    background:#111827;
+    color:white;
 }
 
 .message{
-    margin-top:15px;
     padding:12px;
     border-radius:9px;
-    text-align:center;
+    margin-top:15px;
     background:#f3f4f6;
 }
 
@@ -102,50 +99,140 @@ button:disabled{
     color:#166534;
 }
 
-#dashboard{
-    display:none;
-    width:100%;
+#adminPage{
     min-height:100vh;
     padding:20px;
 }
 
-.dashboard-box{
-    max-width:900px;
-    margin:20px auto;
+.container{
+    max-width:1100px;
+    margin:auto;
 }
 
 .header{
     background:white;
     padding:20px;
     border-radius:15px;
-    box-shadow:0 5px 20px rgba(0,0,0,.08);
+    box-shadow:0 5px 20px #0001;
     display:flex;
     justify-content:space-between;
     align-items:center;
     gap:15px;
+    flex-wrap:wrap;
 }
 
-.header button{
-    width:auto;
+.header h2{
     margin:0;
+}
+
+.header small{
+    color:#6b7280;
+}
+
+.logout{
     background:#dc2626;
+    color:white;
 }
 
 .card{
     background:white;
+    margin-top:20px;
     padding:22px;
     border-radius:15px;
-    box-shadow:0 5px 20px rgba(0,0,0,.08);
-    margin-top:20px;
+    box-shadow:0 5px 20px #0001;
 }
 
 .card h2{
     margin-top:0;
 }
 
-.info{
-    line-height:2;
-    font-size:17px;
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+}
+
+.stat{
+    background:white;
+    padding:22px;
+    border-radius:15px;
+    box-shadow:0 5px 20px #0001;
+}
+
+.stat-title{
+    color:#6b7280;
+}
+
+.stat-number{
+    font-size:30px;
+    font-weight:bold;
+    margin-top:8px;
+}
+
+.add-btn{
+    background:#15803d;
+    color:white;
+    width:100%;
+    margin-top:10px;
+}
+
+.employee{
+    border:1px solid #e5e7eb;
+    padding:15px;
+    border-radius:10px;
+    margin-top:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.badge{
+    padding:5px 10px;
+    border-radius:20px;
+    font-size:13px;
+}
+
+.active{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.inactive{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.disable-btn{
+    background:#dc2626;
+    color:white;
+}
+
+.enable-btn{
+    background:#15803d;
+    color:white;
+}
+
+.refresh-btn{
+    background:#e5e7eb;
+    margin-bottom:10px;
+}
+
+footer{
+    text-align:center;
+    padding:25px;
+    color:#777;
+}
+
+@media(max-width:600px){
+    #adminPage{
+        padding:12px;
+    }
+
+    .card{
+        padding:17px;
+    }
 }
 </style>
 </head>
@@ -156,7 +243,7 @@ button:disabled{
 
 <div id="loginPage" class="page">
 
-    <div class="box">
+    <div class="login-box">
 
         <h1>نظام مطابقة الصناديق</h1>
 
@@ -164,15 +251,14 @@ button:disabled{
             تسجيل الدخول
         </div>
 
-        <div id="message"></div>
+        <div id="loginMessage"></div>
 
         <label>اسم المستخدم</label>
 
         <input
             id="username"
             type="email"
-            placeholder="أدخل اسم المستخدم"
-            autocomplete="username"
+            placeholder="اسم المستخدم"
         >
 
         <label>كلمة المرور</label>
@@ -180,11 +266,13 @@ button:disabled{
         <input
             id="password"
             type="password"
-            placeholder="أدخل كلمة المرور"
-            autocomplete="current-password"
+            placeholder="كلمة المرور"
         >
 
-        <button id="loginBtn">
+        <button
+            id="loginBtn"
+            class="login-btn"
+        >
             تسجيل الدخول
         </button>
 
@@ -193,38 +281,154 @@ button:disabled{
 </div>
 
 
-<!-- DASHBOARD -->
+<!-- ADMIN -->
 
-<div id="dashboard">
+<div id="adminPage" class="hidden">
 
-    <div class="dashboard-box">
+<div class="container">
 
-        <div class="header">
+    <div class="header">
 
-            <div>
-                <strong id="welcome"></strong>
-                <br>
-                <span id="role"></span>
+        <div>
+            <h2>نظام مطابقة الصناديق</h2>
+            <small id="adminWelcome"></small>
+        </div>
+
+        <button
+            id="logoutBtn"
+            class="logout"
+        >
+            تسجيل الخروج
+        </button>
+
+    </div>
+
+
+    <div class="grid">
+
+        <div class="stat">
+            <div class="stat-title">
+                عدد الموظفين
             </div>
 
-            <button id="logoutBtn">
-                تسجيل الخروج
-            </button>
-
+            <div
+                id="employeeCount"
+                class="stat-number"
+            >
+                0
+            </div>
         </div>
 
 
-        <div class="card">
-
-            <h2>لوحة التحكم</h2>
-
-            <div id="employeeInfo" class="info">
-                جاري تحميل البيانات...
+        <div class="stat">
+            <div class="stat-title">
+                الشفتات
             </div>
 
+            <div
+                id="shiftCount"
+                class="stat-number"
+            >
+                0
+            </div>
+        </div>
+
+
+        <div class="stat">
+            <div class="stat-title">
+                الشفتات المفتوحة
+            </div>
+
+            <div
+                id="openShiftCount"
+                class="stat-number"
+            >
+                0
+            </div>
         </div>
 
     </div>
+
+
+    <!-- إضافة موظف -->
+
+    <div class="card">
+
+        <h2>إضافة موظف جديد</h2>
+
+        <div id="addMessage"></div>
+
+        <label>اسم الموظف</label>
+
+        <input
+            id="newName"
+            type="text"
+            placeholder="مثال: محمد"
+        >
+
+        <label>اسم المستخدم / البريد الإلكتروني</label>
+
+        <input
+            id="newUsername"
+            type="email"
+            placeholder="employee@gmail.com"
+        >
+
+        <label>كلمة المرور</label>
+
+        <input
+            id="newPassword"
+            type="password"
+            placeholder="6 أحرف على الأقل"
+        >
+
+        <button
+            id="addEmployeeBtn"
+            class="add-btn"
+        >
+            إضافة الموظف
+        </button>
+
+    </div>
+
+
+    <!-- قائمة الموظفين -->
+
+    <div class="card">
+
+        <h2>الموظفين</h2>
+
+        <button
+            id="refreshEmployees"
+            class="refresh-btn"
+        >
+            تحديث القائمة
+        </button>
+
+        <div id="employeesList">
+            جاري التحميل...
+        </div>
+
+    </div>
+
+
+    <!-- الشفتات -->
+
+    <div class="card">
+
+        <h2>الشفتات</h2>
+
+        <div id="shiftsList">
+            جاري التحميل...
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+07710621453
+</footer>
 
 </div>
 
@@ -237,37 +441,34 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 "sb_publishable_Tcq8m6WDJWycpoPxFZObWQ_bkMYwPSv";
 
-
-const db = supabase.createClient(
+const db =
+supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
 
-
-const loginPage =
-document.getElementById("loginPage");
-
-const dashboard =
-document.getElementById("dashboard");
-
-const message =
-document.getElementById("message");
-
-const loginBtn =
-document.getElementById("loginBtn");
+let currentUser = null;
+let currentEmployee = null;
 
 
-function showMessage(text,type="message"){
+/* ================= رسالة ================= */
 
-    message.innerHTML =
+function message(id,text,type="message"){
+
+    document.getElementById(id).innerHTML =
     `<div class="${type}">${text}</div>`;
 
 }
 
 
-/* تسجيل الدخول */
+/* ================= تسجيل الدخول ================= */
 
-loginBtn.onclick = async function(){
+document
+.getElementById("loginBtn")
+.onclick = login;
+
+
+async function login(){
 
     const username =
     document.getElementById("username")
@@ -281,7 +482,8 @@ loginBtn.onclick = async function(){
 
     if(!username || !password){
 
-        showMessage(
+        message(
+            "loginMessage",
             "أدخل اسم المستخدم وكلمة المرور",
             "error"
         );
@@ -290,15 +492,13 @@ loginBtn.onclick = async function(){
     }
 
 
-    loginBtn.disabled = true;
+    const btn =
+    document.getElementById("loginBtn");
 
-    loginBtn.textContent =
+    btn.disabled = true;
+
+    btn.textContent =
     "جاري تسجيل الدخول...";
-
-
-    showMessage(
-        "جاري الاتصال..."
-    );
 
 
     try{
@@ -315,220 +515,655 @@ loginBtn.onclick = async function(){
 
         if(result.error){
 
-            showMessage(
-                "خطأ: " + result.error.message,
+            message(
+                "loginMessage",
+                result.error.message,
                 "error"
             );
-
-            loginBtn.disabled = false;
-
-            loginBtn.textContent =
-            "تسجيل الدخول";
 
             return;
         }
 
 
-        const user =
+        currentUser =
         result.data.user;
 
-
-        if(!user){
-
-            showMessage(
-                "لم يتم الحصول على بيانات الحساب",
-                "error"
-            );
-
-            loginBtn.disabled = false;
-
-            loginBtn.textContent =
-            "تسجيل الدخول";
-
-            return;
-        }
-
-
-        showMessage(
-            "تم تسجيل الدخول، جاري تحميل الحساب..."
-        );
-
-
-        /*
-          جلب حساب الموظف
-        */
 
         const employeeResult =
         await db
         .from("employees")
-        .select(
-            "id,name,username,role,active,auth_user_id"
-        )
+        .select("*")
         .eq(
             "auth_user_id",
-            user.id
+            currentUser.id
         )
         .maybeSingle();
 
 
         if(employeeResult.error){
 
-            showMessage(
-                "تم الدخول لكن حدث خطأ بتحميل بيانات الحساب: "
+            message(
+                "loginMessage",
+                "خطأ بقراءة بيانات الحساب: "
                 + employeeResult.error.message,
                 "error"
             );
 
-            loginBtn.disabled = false;
-
-            loginBtn.textContent =
-            "تسجيل الدخول";
-
             return;
         }
 
 
-        const employee =
-        employeeResult.data;
+        if(!employeeResult.data){
 
-
-        if(!employee){
-
-            showMessage(
-                "الحساب موجود لكن لا توجد بيانات موظف مرتبطة به.",
+            message(
+                "loginMessage",
+                "الحساب غير مرتبط بموظف.",
                 "error"
             );
 
-            loginBtn.disabled = false;
-
-            loginBtn.textContent =
-            "تسجيل الدخول";
-
             return;
         }
 
 
-        if(employee.active !== true){
+        currentEmployee =
+        employeeResult.data;
 
-            showMessage(
-                "هذا الحساب غير فعال.",
+
+        if(currentEmployee.active !== true){
+
+            message(
+                "loginMessage",
+                "الحساب غير فعال.",
                 "error"
             );
 
             await db.auth.signOut();
 
-            loginBtn.disabled = false;
+            return;
+        }
 
-            loginBtn.textContent =
-            "تسجيل الدخول";
+
+        if(currentEmployee.role === "admin"){
+
+            showAdmin();
+
+        }else{
+
+            message(
+                "loginMessage",
+                "حساب الموظف جاهز، سيتم إضافة واجهة الشفتات بالخطوة التالية.",
+                "success"
+            );
+
+        }
+
+
+    }catch(error){
+
+        message(
+            "loginMessage",
+            "حدث خطأ: " + error.message,
+            "error"
+        );
+
+    }finally{
+
+        btn.disabled = false;
+
+        btn.textContent =
+        "تسجيل الدخول";
+
+    }
+
+}
+
+
+/* ================= لوحة المدير ================= */
+
+async function showAdmin(){
+
+    document
+    .getElementById("loginPage")
+    .classList.add("hidden");
+
+
+    document
+    .getElementById("adminPage")
+    .classList.remove("hidden");
+
+
+    document
+    .getElementById("adminWelcome")
+    .textContent =
+    "مرحباً " + currentEmployee.name;
+
+
+    await loadEmployees();
+
+    await loadShifts();
+
+}
+
+
+/* ================= الموظفين ================= */
+
+async function loadEmployees(){
+
+    const box =
+    document.getElementById("employeesList");
+
+    box.innerHTML =
+    "جاري تحميل الموظفين...";
+
+
+    const result =
+    await db
+    .from("employees")
+    .select(
+        "id,name,username,role,active,created_at"
+    )
+    .order(
+        "created_at",
+        {ascending:false}
+    );
+
+
+    if(result.error){
+
+        box.innerHTML =
+        `<div class="error">
+        ${result.error.message}
+        </div>`;
+
+        return;
+    }
+
+
+    const employees =
+    result.data || [];
+
+
+    document
+    .getElementById("employeeCount")
+    .textContent =
+    employees.length;
+
+
+    if(employees.length === 0){
+
+        box.innerHTML =
+        "لا يوجد موظفين.";
+
+        return;
+    }
+
+
+    box.innerHTML =
+    employees.map(employee => {
+
+        const status =
+        employee.active
+        ? `<span class="badge active">فعال</span>`
+        : `<span class="badge inactive">غير فعال</span>`;
+
+
+        const button =
+        employee.role === "admin"
+        ? ""
+        :
+        employee.active
+
+        ? `
+        <button
+            class="disable-btn"
+            onclick="changeEmployeeStatus('${employee.id}',false)"
+        >
+            تعطيل
+        </button>
+        `
+
+        :
+
+        `
+        <button
+            class="enable-btn"
+            onclick="changeEmployeeStatus('${employee.id}',true)"
+        >
+            تفعيل
+        </button>
+        `;
+
+
+        return `
+
+        <div class="employee">
+
+            <div>
+
+                <strong>
+                    ${escapeHtml(employee.name)}
+                </strong>
+
+                <br>
+
+                ${escapeHtml(employee.username)}
+
+                <br><br>
+
+                ${employee.role === "admin"
+                    ? "مدير"
+                    : "موظف"}
+
+                &nbsp;
+
+                ${status}
+
+            </div>
+
+            <div>
+                ${button}
+            </div>
+
+        </div>
+
+        `;
+
+    }).join("");
+
+}
+
+
+/* ================= تفعيل وتعطيل ================= */
+
+async function changeEmployeeStatus(id,status){
+
+    if(!confirm(
+        status
+        ? "هل تريد تفعيل الموظف؟"
+        : "هل تريد تعطيل الموظف؟"
+    )){
+
+        return;
+    }
+
+
+    const result =
+    await db
+    .from("employees")
+    .update({
+        active:status
+    })
+    .eq("id",id);
+
+
+    if(result.error){
+
+        alert(
+            "حدث خطأ: "
+            + result.error.message
+        );
+
+        return;
+    }
+
+
+    await loadEmployees();
+
+}
+
+
+/* ================= إضافة موظف ================= */
+
+document
+.getElementById("addEmployeeBtn")
+.onclick =
+addEmployee;
+
+
+async function addEmployee(){
+
+    const name =
+    document.getElementById("newName")
+    .value
+    .trim();
+
+    const username =
+    document.getElementById("newUsername")
+    .value
+    .trim();
+
+    const password =
+    document.getElementById("newPassword")
+    .value;
+
+
+    if(!name || !username || !password){
+
+        message(
+            "addMessage",
+            "املأ جميع الحقول.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if(password.length < 6){
+
+        message(
+            "addMessage",
+            "كلمة المرور يجب أن تكون 6 أحرف على الأقل.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const btn =
+    document.getElementById("addEmployeeBtn");
+
+
+    btn.disabled = true;
+
+    btn.textContent =
+    "جاري إنشاء الموظف...";
+
+
+    try{
+
+        /*
+        نأخذ جلسة المدير الحالية
+        */
+
+        const sessionResult =
+        await db.auth.getSession();
+
+
+        const session =
+        sessionResult.data.session;
+
+
+        if(!session){
+
+            message(
+                "addMessage",
+                "انتهت جلسة المدير. سجل الدخول من جديد.",
+                "error"
+            );
 
             return;
         }
 
 
         /*
-          إظهار لوحة التحكم
+        إرسال الطلب إلى Edge Function
         */
 
-        loginPage.style.display =
-        "none";
+        const response =
+        await fetch(
+            SUPABASE_URL +
+            "/functions/v1/create-employee",
+            {
 
-        dashboard.style.display =
-        "block";
+                method:"POST",
+
+                headers:{
+
+                    "Content-Type":
+                    "application/json",
+
+                    "Authorization":
+                    "Bearer " +
+                    session.access_token
+
+                },
+
+                body:JSON.stringify({
+
+                    name:name,
+
+                    username:username,
+
+                    password:password
+
+                })
+
+            }
+        );
 
 
-        document.getElementById("welcome")
-        .textContent =
-        "مرحباً " + employee.name;
+        const data =
+        await response.json();
 
 
-        document.getElementById("role")
-        .textContent =
-        employee.role === "admin"
-        ? "المدير"
-        : "الموظف";
+        if(!response.ok){
+
+            message(
+                "addMessage",
+                data.error ||
+                "فشل إنشاء الموظف",
+                "error"
+            );
+
+            return;
+        }
 
 
-        document.getElementById("employeeInfo")
-        .innerHTML = `
+        if(data.error){
 
-            <div>
-                <strong>الاسم:</strong>
-                ${escapeHtml(employee.name)}
-            </div>
+            message(
+                "addMessage",
+                data.error,
+                "error"
+            );
 
-            <div>
-                <strong>اسم المستخدم:</strong>
-                ${escapeHtml(employee.username)}
-            </div>
+            return;
+        }
 
-            <div>
-                <strong>الصلاحية:</strong>
-                ${employee.role === "admin"
-                    ? "مدير"
-                    : "موظف"}
-            </div>
 
-            <div>
-                <strong>الحالة:</strong>
-                فعال
-            </div>
+        message(
+            "addMessage",
+            "تم إنشاء الموظف بنجاح ✅",
+            "success"
+        );
 
-            <hr>
 
-            <div>
-                تسجيل الدخول ناجح ✅
-            </div>
+        document
+        .getElementById("newName")
+        .value = "";
 
-        `;
+        document
+        .getElementById("newUsername")
+        .value = "";
+
+        document
+        .getElementById("newPassword")
+        .value = "";
+
+
+        await loadEmployees();
 
 
     }catch(error){
 
-        showMessage(
+        message(
+            "addMessage",
             "حدث خطأ: " + error.message,
             "error"
         );
 
+    }finally{
+
+        btn.disabled = false;
+
+        btn.textContent =
+        "إضافة الموظف";
+
+    }
+
+}
+
+
+/* ================= الشفتات ================= */
+
+async function loadShifts(){
+
+    const box =
+    document.getElementById("shiftsList");
+
+    box.innerHTML =
+    "جاري تحميل الشفتات...";
+
+
+    const result =
+    await db
+    .from("shifts")
+    .select("*")
+    .order(
+        "start_date",
+        {ascending:false}
+    )
+    .limit(100);
+
+
+    if(result.error){
+
+        box.innerHTML =
+        `<div class="error">
+        ${result.error.message}
+        </div>`;
+
+        return;
     }
 
 
-    loginBtn.disabled = false;
+    const shifts =
+    result.data || [];
 
-    loginBtn.textContent =
-    "تسجيل الدخول";
+
+    document
+    .getElementById("shiftCount")
+    .textContent =
+    shifts.length;
+
+
+    const open =
+    shifts.filter(
+        x => x.status === "open"
+    ).length;
+
+
+    document
+    .getElementById("openShiftCount")
+    .textContent =
+    open;
+
+
+    if(shifts.length === 0){
+
+        box.innerHTML =
+        "لا توجد شفتات حتى الآن.";
+
+        return;
+    }
+
+
+    box.innerHTML =
+    shifts.map(shift => {
+
+        const status =
+        shift.status === "open"
+        ? "🟢 مفتوح"
+        : "✅ منتهي";
+
+
+        return `
+
+        <div class="employee">
+
+            <div>
+
+                <strong>
+                    ${status}
+                </strong>
+
+                <br>
+
+                الإيراد الابتدائي:
+                ${Number(
+                    shift.starting_cash || 0
+                ).toLocaleString()} USD
+
+                <br>
+
+                وقت البدء:
+                ${formatDate(
+                    shift.start_date
+                )}
+
+            </div>
+
+        </div>
+
+        `;
+
+    }).join("");
+
+}
+
+
+/* ================= تحديث ================= */
+
+document
+.getElementById("refreshEmployees")
+.onclick =
+async function(){
+
+    await loadEmployees();
+
+    await loadShifts();
 
 };
 
 
-/* تسجيل الخروج */
+/* ================= خروج ================= */
 
 document
 .getElementById("logoutBtn")
-.onclick = async function(){
+.onclick =
+async function(){
 
     await db.auth.signOut();
 
-    dashboard.style.display =
-    "none";
+    currentUser = null;
 
-    loginPage.style.display =
-    "flex";
+    currentEmployee = null;
 
-    document.getElementById("username")
+
+    document
+    .getElementById("adminPage")
+    .classList.add("hidden");
+
+
+    document
+    .getElementById("loginPage")
+    .classList.remove("hidden");
+
+
+    document
+    .getElementById("username")
     .value = "";
 
-    document.getElementById("password")
+    document
+    .getElementById("password")
     .value = "";
-
-    showMessage(
-        "تم تسجيل الخروج"
-    );
 
 };
 
 
-/* حماية عرض النصوص */
+/* ================= أدوات ================= */
 
 function escapeHtml(value){
 
@@ -538,6 +1173,18 @@ function escapeHtml(value){
     .replaceAll(">","&gt;")
     .replaceAll('"',"&quot;")
     .replaceAll("'","&#039;");
+
+}
+
+
+function formatDate(value){
+
+    if(!value){
+        return "-";
+    }
+
+    return new Date(value)
+    .toLocaleString("ar-IQ");
 
 }
 
