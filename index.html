@@ -1,1321 +1,834 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام مطابقة الصناديق</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>نظام مطابقة الصناديق</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: Tahoma, Arial, sans-serif;
-    }
-
-    body {
-      margin: 0;
-      background: #f3f5f8;
-      color: #1f2937;
-    }
-
-    header {
-      background: #111827;
-      color: white;
-      text-align: center;
-      padding: 22px 15px;
-    }
-
-    header h1 {
-      margin: 0 0 8px;
-      font-size: 24px;
-    }
-
-    header p {
-      margin: 0;
-      color: #cbd5e1;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 1000px;
-      margin: 25px auto;
-      padding: 0 15px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 15px;
-      padding: 22px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,.07);
-    }
-
-    h2, h3 {
-      margin-top: 0;
-    }
-
-    label {
-      display: block;
-      font-weight: bold;
-      margin-top: 12px;
-    }
-
-    input,
-    textarea,
-    button {
-      width: 100%;
-      padding: 13px;
-      margin-top: 7px;
-      margin-bottom: 12px;
-      border-radius: 9px;
-      border: 1px solid #d1d5db;
-      font-size: 15px;
-    }
-
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-
-    button {
-      border: none;
-      background: #2563eb;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:disabled {
-      opacity: .6;
-      cursor: not-allowed;
-    }
-
-    .green {
-      background: #16a34a;
-    }
-
-    .red {
-      background: #dc2626;
-    }
-
-    .gray {
-      background: #475569;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .message {
-      padding: 13px;
-      border-radius: 9px;
-      margin: 12px 0;
-      font-weight: bold;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .success {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    .error {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    .info {
-      background: #dbeafe;
-      color: #1e40af;
-    }
-
-    .user-box {
-      background: #eef2ff;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
-
-    .employee-box {
-      border: 1px solid #e5e7eb;
-      padding: 15px;
-      border-radius: 10px;
-      margin: 10px 0;
-    }
-
-    .amount {
-      font-size: 25px;
-      font-weight: bold;
-      color: #2563eb;
-      margin-top: 8px;
-    }
-
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-
-    footer {
-      text-align: center;
-      color: #64748b;
-      padding: 25px;
-    }
-
-    @media(max-width:700px) {
-      .row {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+<style>
+*{box-sizing:border-box;font-family:Tahoma,Arial}
+body{margin:0;background:#f3f4f6;color:#111827}
+header{background:#111827;color:white;text-align:center;padding:25px}
+.container{max-width:700px;margin:25px auto;padding:15px}
+.card{background:white;padding:22px;border-radius:15px;margin-bottom:20px;box-shadow:0 3px 15px #0001}
+input,button{width:100%;padding:14px;margin:8px 0;border-radius:9px;font-size:16px}
+input{border:1px solid #ccc}
+button{border:0;background:#2563eb;color:white;font-weight:bold}
+button:disabled{opacity:.6}
+.hidden{display:none}
+.msg{padding:14px;border-radius:9px;margin:12px 0;white-space:pre-wrap;word-break:break-word}
+.error{background:#fee2e2;color:#991b1b}
+.success{background:#dcfce7;color:#166534}
+.info{background:#dbeafe;color:#1e40af}
+.green{background:#16a34a}
+.red{background:#dc2626}
+.box{background:#eef2ff;padding:15px;border-radius:10px;margin:15px 0}
+</style>
 </head>
 
 <body>
 
 <header>
-  <h1>نظام مطابقة الصناديق</h1>
-  <p>إدارة الشفتات ومطابقة الصناديق</p>
+<h1>نظام مطابقة الصناديق</h1>
+<div>إدارة الشفتات ومطابقة الصناديق</div>
 </header>
 
 <div class="container">
 
-  <!-- تسجيل الدخول -->
-  <div id="loginSection" class="card">
+<!-- تسجيل الدخول -->
+<div id="loginBox" class="card">
 
-    <h2>تسجيل الدخول</h2>
+<h2>تسجيل الدخول</h2>
 
-    <div id="loginMessage"></div>
+<div id="loginMsg"></div>
 
-    <label>اسم المستخدم</label>
-    <input
-      id="loginUsername"
-      type="email"
-      autocomplete="username"
-      placeholder="أدخل البريد الإلكتروني"
-    >
+<label>اسم المستخدم</label>
+<input id="username" type="email" placeholder="البريد الإلكتروني">
 
-    <label>كلمة المرور</label>
-    <input
-      id="loginPassword"
-      type="password"
-      autocomplete="current-password"
-      placeholder="أدخل كلمة المرور"
-    >
+<label>كلمة المرور</label>
+<input id="password" type="password" placeholder="كلمة المرور">
 
-    <button id="loginButton">
-      دخول
-    </button>
-
-  </div>
-
-
-  <!-- التطبيق -->
-  <div id="appSection" class="hidden">
-
-    <div class="user-box">
-      <div>
-        <b>المستخدم:</b>
-        <span id="employeeName"></span>
-      </div>
-
-      <div style="margin-top:7px">
-        <b>الصلاحية:</b>
-        <span id="employeeRole"></span>
-      </div>
-    </div>
-
-    <div id="mainMessage"></div>
-
-
-    <!-- لوحة المدير -->
-    <div id="adminSection" class="card hidden">
-
-      <h2>لوحة المدير</h2>
-
-      <button
-        id="showAddEmployee"
-        class="green"
-      >
-        + إضافة موظف
-      </button>
-
-
-      <div
-        id="addEmployeeBox"
-        class="hidden"
-      >
-
-        <hr>
-
-        <h3>إضافة موظف جديد</h3>
-
-        <label>اسم الموظف</label>
-        <input
-          id="newName"
-          type="text"
-          placeholder="مثلاً أحمد"
-        >
-
-        <label>اسم المستخدم / البريد الإلكتروني</label>
-        <input
-          id="newUsername"
-          type="email"
-          placeholder="example@gmail.com"
-        >
-
-        <label>كلمة المرور</label>
-        <input
-          id="newPassword"
-          type="password"
-          placeholder="6 أحرف على الأقل"
-        >
-
-        <button
-          id="createEmployee"
-          class="green"
-        >
-          حفظ الموظف
-        </button>
-
-        <button
-          id="cancelEmployee"
-          class="gray"
-        >
-          إلغاء
-        </button>
-
-      </div>
-
-
-      <hr>
-
-      <h3>الموظفون</h3>
-
-      <div id="employeesList">
-        جارِ التحميل...
-      </div>
-
-
-      <hr>
-
-      <h3>الشفتات</h3>
-
-      <button
-        id="refreshShifts"
-        class="gray"
-      >
-        تحديث الشفتات
-      </button>
-
-      <div id="shiftsList">
-        جارِ التحميل...
-      </div>
-
-    </div>
-
-
-    <!-- قسم الموظف -->
-    <div id="employeeSection" class="card hidden">
-
-      <h2>إدارة الشفت</h2>
-
-
-      <!-- بدء الشفت -->
-      <div id="startBox">
-
-        <h3>بدء الشفت</h3>
-
-        <div class="user-box">
-          الموظف:
-          <b id="startEmployeeName"></b>
-        </div>
-
-        <label>الإيراد الابتدائي</label>
-
-        <input
-          id="startingCash"
-          type="number"
-          min="0"
-          step="0.01"
-          placeholder="أدخل الإيراد الابتدائي"
-        >
-
-        <button
-          id="startShift"
-          class="green"
-        >
-          بدء الشفت
-        </button>
-
-      </div>
-
-
-      <!-- نهاية الشفت -->
-      <div
-        id="finishBox"
-        class="hidden"
-      >
-
-        <h3>نهاية الشفت</h3>
-
-        <label>المبلغ المعزز</label>
-
-        <input
-          id="reinforcement"
-          type="number"
-          min="0"
-          step="0.01"
-          value="0"
-        >
-
-
-        <label>عدد المعاملات غير المباعة</label>
-
-        <input
-          id="unsoldCount"
-          type="number"
-          min="0"
-          value="0"
-        >
-
-        <div class="user-box">
-          قيمة غير المباعة:
-
-          <div class="amount">
-            <span id="unsoldAmount">0.00</span> $
-          </div>
-
-          <small>
-            كل معاملة = 2000 دولار
-          </small>
-        </div>
-
-
-        <h3>المتفرقة</h3>
-
-        <div id="miscList"></div>
-
-        <button
-          id="addMisc"
-          class="gray"
-        >
-          + إضافة متفرقة
-        </button>
-
-        <div class="user-box">
-          مجموع المتفرقة:
-
-          <div class="amount">
-            <span id="miscTotal">0.00</span> $
-          </div>
-        </div>
-
-
-        <label>ملاحظات</label>
-
-        <textarea
-          id="notes"
-          placeholder="اكتب الملاحظات إن وجدت"
-        ></textarea>
-
-
-        <button
-          id="finishShift"
-          class="green"
-        >
-          إنهاء الشفت وحفظ البيانات
-        </button>
-
-      </div>
-
-
-      <!-- مكتمل -->
-      <div
-        id="completedBox"
-        class="hidden"
-      >
-
-        <div class="message success">
-          تم إنهاء الشفت بنجاح.
-        </div>
-
-        <p>
-          لا يمكن للموظف تعديل الشفت بعد إنهائه.
-        </p>
-
-      </div>
-
-    </div>
-
-
-    <button
-      id="logout"
-      class="red"
-    >
-      تسجيل الخروج
-    </button>
-
-  </div>
+<button id="loginBtn">دخول</button>
 
 </div>
 
-<footer>
-  07710621453
-</footer>
+
+<!-- التطبيق -->
+<div id="app" class="hidden">
+
+<div class="card">
+
+<div class="box">
+<b>المستخدم:</b>
+<span id="name"></span>
+<br><br>
+<b>الصلاحية:</b>
+<span id="role"></span>
+</div>
+
+<div id="appMsg"></div>
+
+<button id="logout" class="red">
+تسجيل الخروج
+</button>
+
+</div>
+
+
+<!-- المدير -->
+<div id="admin" class="card hidden">
+
+<h2>لوحة المدير</h2>
+
+<button id="addBtn" class="green">
++ إضافة موظف
+</button>
+
+<div id="addBox" class="hidden">
+
+<hr>
+
+<h3>إضافة موظف</h3>
+
+<label>اسم الموظف</label>
+<input id="empName" placeholder="مثلاً أحمد">
+
+<label>اسم المستخدم / البريد</label>
+<input id="empUser" type="email" placeholder="example@gmail.com">
+
+<label>كلمة المرور</label>
+<input id="empPass" type="password" placeholder="6 أحرف على الأقل">
+
+<button id="saveEmp" class="green">
+حفظ الموظف
+</button>
+
+</div>
+
+<hr>
+
+<h3>الموظفون</h3>
+
+<div id="employees">
+جارِ التحميل...
+</div>
+
+</div>
+
+
+<!-- الموظف -->
+<div id="cashier" class="card hidden">
+
+<h2>الشفت</h2>
+
+<div id="startBox">
+
+<h3>بدء الشفت</h3>
+
+<label>الإيراد الابتدائي</label>
+<input id="startCash" type="number" min="0" value="0">
+
+<button id="startBtn" class="green">
+بدء الشفت
+</button>
+
+</div>
+
+
+<div id="finishBox" class="hidden">
+
+<h3>نهاية الشفت</h3>
+
+<label>المبلغ المعزز</label>
+<input id="reinforce" type="number" min="0" value="0">
+
+<label>عدد المعاملات غير المباعة</label>
+<input id="unsold" type="number" min="0" value="0">
+
+<div class="box">
+قيمة غير المباعة:
+<b id="unsoldValue">0</b> $
+</div>
+
+<label>ملاحظات</label>
+<input id="notes" placeholder="الملاحظات">
+
+<button id="finishBtn" class="green">
+إنهاء الشفت
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 
 <script>
 
 const SUPABASE_URL =
-  "https://paylauzgicnocexukpcg.supabase.co";
+"https://paylauzgicnocexukpcg.supabase.co";
 
 const SUPABASE_KEY =
-  "sb_publishable_Tcq8m6WDJWycpoPxFZObWQ_bkMYwPSv";
+"sb_publishable_Tcq8m6WDJWycpoPxFZObWQ_bkMYwPSv";
 
-const client =
-  supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
 
+let db;
 
 let currentUser = null;
 let currentEmployee = null;
 let currentShift = null;
 
 
-/* =========================
-   أدوات
-========================= */
+/* رسالة */
+function message(text,type="info"){
 
-function showLoginMessage(text, type="error") {
-
-  document.getElementById("loginMessage").innerHTML =
-    `<div class="message ${type}">${escapeHtml(text)}</div>`;
+document.getElementById("appMsg").innerHTML =
+`<div class="msg ${type}">${text}</div>`;
 
 }
 
 
-function showMessage(text, type="info") {
+function loginMessage(text,type="info"){
 
-  document.getElementById("mainMessage").innerHTML =
-    `<div class="message ${type}">${escapeHtml(text)}</div>`;
-
-}
-
-
-function escapeHtml(value) {
-
-  return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+document.getElementById("loginMsg").innerHTML =
+`<div class="msg ${type}">${text}</div>`;
 
 }
 
 
-function money(value) {
+/* تشغيل Supabase */
+try{
 
-  return Number(value || 0).toLocaleString(
-    "en-US",
-    {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }
-  );
+db =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
 
-}
+loginMessage(
+"النظام جاهز. أدخل بيانات الدخول.",
+"info"
+);
 
+}catch(e){
 
-function dateText(value) {
-
-  if (!value) return "-";
-
-  return new Date(value).toLocaleString(
-    "ar-IQ",
-    {
-      dateStyle: "medium",
-      timeStyle: "short"
-    }
-  );
+loginMessage(
+"خطأ في تشغيل النظام: "+e.message,
+"error"
+);
 
 }
 
 
-/*
-  يمنع بقاء أي عملية معلقة
-*/
-function withTimeout(promise, seconds=15) {
-
-  return Promise.race([
-
-    promise,
-
-    new Promise((_, reject) => {
-
-      setTimeout(() => {
-
-        reject(
-          new Error(
-            "انتهت مهلة الاتصال. تأكد من الإنترنت ثم حاول مرة ثانية."
-          )
-        );
-
-      }, seconds * 1000);
-
-    })
-
-  ]);
-
-}
-
-
-/* =========================
-   تسجيل الدخول
-========================= */
-
+/* زر الدخول */
 document
-  .getElementById("loginButton")
-  .addEventListener("click", login);
+.getElementById("loginBtn")
+.addEventListener("click",login);
 
 
-async function login() {
+/* تسجيل الدخول */
+async function login(){
 
-  const username =
-    document
-      .getElementById("loginUsername")
-      .value
-      .trim();
+alert("زر الدخول يعمل الآن");
 
-  const password =
-    document
-      .getElementById("loginPassword")
-      .value;
+const username =
+document.getElementById("username").value.trim();
+
+const password =
+document.getElementById("password").value;
 
 
-  if (!username || !password) {
+if(!username || !password){
 
-    showLoginMessage(
-      "اكتب اسم المستخدم وكلمة المرور.",
-      "error"
-    );
+loginMessage(
+"اكتب اسم المستخدم وكلمة المرور.",
+"error"
+);
 
-    return;
-
-  }
-
-
-  const button =
-    document.getElementById("loginButton");
-
-  button.disabled = true;
-  button.textContent = "جارِ تسجيل الدخول...";
-
-  showLoginMessage(
-    "جارِ التحقق من الحساب...",
-    "info"
-  );
+return;
+}
 
 
-  try {
+const btn =
+document.getElementById("loginBtn");
 
-    const result =
-      await withTimeout(
-        client.auth.signInWithPassword({
-          email: username,
-          password: password
-        }),
-        15
-      );
+btn.disabled=true;
+btn.textContent="جارِ الدخول...";
 
-
-    if (result.error) {
-
-      throw new Error(
-        result.error.message
-      );
-
-    }
+loginMessage(
+"جارِ الاتصال بـ Supabase...",
+"info"
+);
 
 
-    if (!result.data || !result.data.user) {
+try{
 
-      throw new Error(
-        "تم تسجيل الدخول لكن لم يتم العثور على بيانات المستخدم."
-      );
+const result =
+await db.auth.signInWithPassword({
 
-    }
+email:username,
 
+password:password
 
-    currentUser =
-      result.data.user;
-
-
-    showLoginMessage(
-      "تم تسجيل الدخول، جارِ تحميل الحساب...",
-      "info"
-    );
+});
 
 
-    await withTimeout(
-      loadEmployee(),
-      15
-    );
+console.log("LOGIN RESULT",result);
 
 
-  } catch (error) {
+if(result.error){
 
-    console.error(
-      "LOGIN ERROR:",
-      error
-    );
-
-
-    let message =
-      error?.message ||
-      "حدث خطأ غير معروف أثناء تسجيل الدخول.";
-
-
-    /*
-      تحويل بعض أخطاء Supabase
-      إلى رسائل مفهومة
-    */
-
-    if (
-      message.toLowerCase().includes(
-        "invalid login credentials"
-      )
-    ) {
-
-      message =
-        "اسم المستخدم أو كلمة المرور غير صحيحة.";
-
-    }
-
-    else if (
-      message.toLowerCase().includes(
-        "email not confirmed"
-      )
-    ) {
-
-      message =
-        "الحساب غير مؤكد في Supabase.";
-
-    }
-
-    else if (
-      message.toLowerCase().includes(
-        "failed to fetch"
-      )
-    ) {
-
-      message =
-        "تعذر الاتصال بـ Supabase. تأكد من الإنترنت.";
-
-    }
-
-
-    showLoginMessage(
-      "خطأ: " + message,
-      "error"
-    );
-
-  }
-
-
-  button.disabled = false;
-  button.textContent = "دخول";
+throw new Error(
+result.error.message
+);
 
 }
 
 
-/* =========================
-   تحميل الموظف
-========================= */
+if(!result.data || !result.data.user){
 
-async function loadEmployee() {
-
-  if (!currentUser) {
-
-    throw new Error(
-      "لا توجد جلسة تسجيل دخول."
-    );
-
-  }
-
-
-  const result =
-    await withTimeout(
-
-      client
-        .from("employees")
-        .select("*")
-        .eq(
-          "auth_user_id",
-          currentUser.id
-        )
-        .maybeSingle(),
-
-      15
-
-    );
-
-
-  if (result.error) {
-
-    throw new Error(
-      "تعذر تحميل بيانات الموظف: " +
-      result.error.message
-    );
-
-  }
-
-
-  if (!result.data) {
-
-    throw new Error(
-      "تم تسجيل الدخول، لكن لا توجد بيانات لهذا المستخدم في جدول employees."
-    );
-
-  }
-
-
-  currentEmployee =
-    result.data;
-
-
-  if (!currentEmployee.active) {
-
-    await client.auth.signOut();
-
-    throw new Error(
-      "هذا الحساب غير فعال."
-    );
-
-  }
-
-
-  document
-    .getElementById("loginSection")
-    .classList
-    .add("hidden");
-
-
-  document
-    .getElementById("appSection")
-    .classList
-    .remove("hidden");
-
-
-  document
-    .getElementById("employeeName")
-    .textContent =
-    currentEmployee.name;
-
-
-  document
-    .getElementById("employeeRole")
-    .textContent =
-    currentEmployee.role === "admin"
-      ? "مدير"
-      : "موظف";
-
-
-  document
-    .getElementById("startEmployeeName")
-    .textContent =
-    currentEmployee.name;
-
-
-  if (
-    currentEmployee.role === "admin"
-  ) {
-
-    document
-      .getElementById("adminSection")
-      .classList
-      .remove("hidden");
-
-
-    document
-      .getElementById("employeeSection")
-      .classList
-      .add("hidden");
-
-
-    await loadEmployees();
-    await loadShifts();
-
-  }
-
-  else {
-
-    document
-      .getElementById("employeeSection")
-      .classList
-      .remove("hidden");
-
-
-    await checkOpenShift();
-
-  }
+throw new Error(
+"تم الدخول لكن لم تصل بيانات المستخدم."
+);
 
 }
 
 
-/* =========================
-   إضافة موظف
-========================= */
+currentUser =
+result.data.user;
 
-document
-  .getElementById("showAddEmployee")
-  .addEventListener(
-    "click",
-    () => {
 
-      document
-        .getElementById("addEmployeeBox")
-        .classList
-        .remove("hidden");
+loginMessage(
+"تم تسجيل الدخول. جارِ تحميل الحساب...",
+"success"
+);
 
-    }
-  );
+
+await loadEmployee();
+
+
+}catch(e){
+
+console.error(e);
+
+
+loginMessage(
+"خطأ تسجيل الدخول:\n"+e.message,
+"error"
+);
+
+}
+
+
+btn.disabled=false;
+btn.textContent="دخول";
+
+}
+
+
+/* تحميل بيانات الموظف */
+async function loadEmployee(){
+
+try{
+
+const result =
+await db
+.from("employees")
+.select("*")
+.eq(
+"auth_user_id",
+currentUser.id
+)
+.maybeSingle();
+
+
+console.log(
+"EMPLOYEE RESULT",
+result
+);
+
+
+if(result.error){
+
+throw new Error(
+"خطأ بقراءة بيانات الموظف: "+
+result.error.message
+);
+
+}
+
+
+if(!result.data){
+
+throw new Error(
+"الحساب موجود في Authentication لكن لا توجد له بيانات في جدول employees."
+);
+
+}
+
+
+currentEmployee =
+result.data;
+
+
+if(!currentEmployee.active){
+
+throw new Error(
+"هذا الحساب غير فعال."
+);
+
+}
 
 
 document
-  .getElementById("cancelEmployee")
-  .addEventListener(
-    "click",
-    () => {
-
-      document
-        .getElementById("addEmployeeBox")
-        .classList
-        .add("hidden");
-
-    }
-  );
+.getElementById("loginBox")
+.classList.add("hidden");
 
 
 document
-  .getElementById("createEmployee")
-  .addEventListener(
-    "click",
-    createEmployee
-  );
+.getElementById("app")
+.classList.remove("hidden");
 
 
-async function createEmployee() {
+document
+.getElementById("name")
+.textContent =
+currentEmployee.name;
 
-  const name =
-    document
-      .getElementById("newName")
-      .value
-      .trim();
 
-  const username =
-    document
-      .getElementById("newUsername")
-      .value
-      .trim();
+document
+.getElementById("role")
+.textContent =
+currentEmployee.role;
 
-  const password =
-    document
-      .getElementById("newPassword")
-      .value;
 
+if(currentEmployee.role==="admin"){
 
-  if (!name || !username || !password) {
+document
+.getElementById("admin")
+.classList.remove("hidden");
 
-    showMessage(
-      "املأ جميع الحقول.",
-      "error"
-    );
+document
+.getElementById("cashier")
+.classList.add("hidden");
 
-    return;
+await loadEmployees();
 
-  }
+}else{
 
+document
+.getElementById("cashier")
+.classList.remove("hidden");
 
-  if (password.length < 6) {
+document
+.getElementById("admin")
+.classList.add("hidden");
 
-    showMessage(
-      "كلمة المرور يجب أن تكون 6 أحرف على الأقل.",
-      "error"
-    );
+await checkShift();
 
-    return;
+}
 
-  }
+}catch(e){
 
+throw e;
 
-  const button =
-    document.getElementById("createEmployee");
-
-  button.disabled = true;
-  button.textContent = "جارِ إنشاء الموظف...";
-
-
-  try {
-
-    /*
-      نتأكد أولاً أن جلسة المدير موجودة
-    */
-
-    const sessionResult =
-      await client.auth.getSession();
-
-
-    if (
-      sessionResult.error
-    ) {
-
-      throw sessionResult.error;
-
-    }
-
-
-    if (
-      !sessionResult.data.session
-    ) {
-
-      throw new Error(
-        "جلسة المدير غير موجودة. سجل الدخول من جديد."
-      );
-
-    }
-
-
-    /*
-      استدعاء Edge Function
-    */
-
-    const result =
-      await withTimeout(
-
-        client.functions.invoke(
-          "create-employee",
-          {
-            body: {
-              name: name,
-              username: username,
-              password: password
-            }
-          }
-        ),
-
-        20
-
-      );
-
-
-    console.log(
-      "CREATE EMPLOYEE RESULT:",
-      result
-    );
-
-
-    if (result.error) {
-
-      throw new Error(
-        result.error.message ||
-        "فشل استدعاء خدمة إضافة الموظف."
-      );
-
-    }
-
-
-    if (
-      result.data &&
-      result.data.error
-    ) {
-
-      throw new Error(
-        result.data.error
-      );
-
-    }
-
-
-    showMessage(
-      "تمت إضافة الموظف بنجاح.",
-      "success"
-    );
-
-
-    document
-      .getElementById("newName")
-      .value = "";
-
-    document
-      .getElementById("newUsername")
-      .value = "";
-
-    document
-      .getElementById("newPassword")
-      .value = "";
-
-
-    document
-      .getElementById("addEmployeeBox")
-      .classList
-      .add("hidden");
-
-
-    await loadEmployees();
-
-
-  } catch (error) {
-
-    console.error(
-      "CREATE EMPLOYEE ERROR:",
-      error
-    );
-
-
-    let message =
-      error?.message ||
-      "حدث خطأ أثناء إضافة الموظف.";
-
-
-    if (
-      message
-        .toLowerCase()
-        .includes("failed to fetch")
-    ) {
-
-      message =
-        "Failed to fetch: تعذر الاتصال بخدمة إضافة الموظف. تأكد من أن Edge Function منشورة وتعمل.";
-
-    }
-
-
-    showMessage(
-      "خطأ: " + message,
-      "error"
-    );
-
-  }
-
-
-  button.disabled = false;
-  button.textContent = "حفظ الموظف";
+}
 
 }
 
 
-/* =========================
-   الموظفون
-========================= */
+/* إضافة موظف - إظهار */
+document
+.getElementById("addBtn")
+.addEventListener(
+"click",
+()=>{
 
-async function loadEmployees() {
+document
+.getElementById("addBox")
+.classList.remove("hidden");
 
-  const box =
-    document.getElementById("employeesList");
-
-  box.innerHTML =
-    "جارِ تحميل الموظفين...";
-
-
-  try {
-
-    const result =
-      await withTimeout(
-
-        client
-          .from("employees")
-          .select(
-            "id,name,username,role,active,created_at"
-          )
-          .order(
-            "created_at",
-            {
-              ascending: false
-            }
-          ),
-
-        15
-
-      );
+}
+);
 
 
-    if (result.error)
-      throw result.error;
+/* إضافة موظف */
+document
+.getElementById("saveEmp")
+.addEventListener(
+"click",
+createEmployee
+);
 
 
-    if (!result.data.length) {
+async function createEmployee(){
 
-      box.innerHTML =
-        "لا يوجد موظفون.";
+const name =
+document.getElementById("empName").value.trim();
 
-      return;
+const username =
+document.getElementById("empUser").value.trim();
 
-    }
-
-
-    box.innerHTML =
-      result.data.map(
-        employee => `
-
-          <div class="employee-box">
-
-            <b>
-              ${escapeHtml(employee.name)}
-            </b>
-
-            <div>
-              المستخدم:
-              ${escapeHtml(employee.username)}
-            </div>
-
-            <div>
-              الصلاحية:
-              ${
-                employee.role === "admin"
-                  ? "مدير"
-                  : "موظف"
-              }
-            </div>
-
-            <div>
-              الحالة:
-              ${
-                employee.active
-                  ? "فعال"
-                  : "غير فعال"
-              }
-            </div>
-
-          </div>
-
-        `
-      ).join("");
+const password =
+document.getElementById("empPass").value;
 
 
-  } catch (error) {
+if(!name||!username||!password){
 
-    box.innerHTML =
-      `<div class="message error">
-        خطأ: ${escapeHtml(error.message)}
-      </div>`;
+message(
+"املأ جميع الحقول.",
+"error"
+);
 
-  }
+return;
 
 }
 
 
-/* =========================
-   الشفتات
-========================= */
+if(password.length<6){
 
+message(
+"كلمة المرور يجب أن تكون 6 أحرف على الأقل.",
+"error"
+);
+
+return;
+
+}
+
+
+const btn =
+document.getElementById("saveEmp");
+
+btn.disabled=true;
+
+btn.textContent=
+"جارِ إنشاء الموظف...";
+
+
+try{
+
+const session =
+await db.auth.getSession();
+
+
+if(!session.data.session){
+
+throw new Error(
+"جلسة المدير غير موجودة. سجل الدخول من جديد."
+);
+
+}
+
+
+const result =
+await db.functions.invoke(
+"create-employee",
+{
+
+body:{
+name:name,
+username:username,
+password:password
+}
+
+}
+);
+
+
+console.log(
+"CREATE EMPLOYEE",
+result
+);
+
+
+if(result.error){
+
+throw new Error(
+result.error.message
+);
+
+}
+
+
+if(result.data && result.data.error){
+
+throw new Error(
+result.data.error
+);
+
+}
+
+
+message(
+"تمت إضافة الموظف بنجاح.",
+"success"
+);
+
+
+document.getElementById("empName").value="";
+document.getElementById("empUser").value="";
+document.getElementById("empPass").value="";
+
+
+await loadEmployees();
+
+
+}catch(e){
+
+console.error(e);
+
+message(
+"خطأ إضافة الموظف:\n"+e.message,
+"error"
+);
+
+}
+
+
+btn.disabled=false;
+btn.textContent="حفظ الموظف";
+
+}
+
+
+/* الموظفون */
+async function loadEmployees(){
+
+const box =
+document.getElementById("employees");
+
+box.innerHTML=
+"جارِ تحميل الموظفين...";
+
+
+try{
+
+const result =
+await db
+.from("employees")
+.select(
+"id,name,username,role,active"
+)
+.order(
+"created_at",
+{ascending:false}
+);
+
+
+if(result.error){
+
+throw result.error;
+
+}
+
+
+if(!result.data.length){
+
+box.innerHTML=
+"لا يوجد موظفون.";
+
+return;
+
+}
+
+
+box.innerHTML =
+result.data.map(
+x=>`
+
+<div class="box">
+
+<b>${x.name}</b>
+
+<br>
+
+المستخدم:
+${x.username}
+
+<br>
+
+الصلاحية:
+${x.role}
+
+<br>
+
+الحالة:
+${x.active?"فعال":"غير فعال"}
+
+</div>
+
+`
+).join("");
+
+
+}catch(e){
+
+box.innerHTML=
+`<div class="msg error">
+خطأ: ${e.message}
+</div>`;
+
+}
+
+}
+
+
+/* بدء الشفت */
 document
-  .getElementById("refreshShifts")
-  .addEventListener(
-    "click",
-    loadShifts
-  );
+.getElementById("startBtn")
+.addEventListener(
+"click",
+startShift
+);
 
 
-async function loadShifts() {
+async function startShift(){
 
-  const box =
-    document.getElementById("shiftsList");
-
-  box.innerHTML =
-    "جارِ تحميل الشفتات...";
-
-
-  try {
-
-    const result =
-      await withTimeout(
-
-        client
-          .from("shifts")
-          .select(
-            "*, employees(name,username)"
-          )
-          .order(
-            "start_date",
-            {
-              ascending: false
-            }
-          )
-          .limit(100),
-
-        15
-
-      );
+const amount =
+Number(
+document.getElementById("startCash").value||0
+);
 
 
-    if (result.error)
-      throw result.error;
+try{
+
+const existing =
+await db
+.from("shifts")
+.select("*")
+.eq(
+"employee_id",
+currentEmployee.id
+)
+.eq(
+"status",
+"open"
+)
+.maybeSingle();
 
 
-    if (!result.data.length) {
+if(existing.error){
 
-      box.innerHTML =
-        "لا توجد شفتات.";
+throw existing.error;
 
-      return;
-
-    }
+}
 
 
-    box.innerHTML =
-      result.data.map(
-        shift => {
+if(existing.data){
 
-          const employee =
-            shift.employees;
+currentShift =
+existing.data;
+
+showFinish();
+
+return;
+
+}
 
 
-          return `
+const result =
+await db
+.from("shifts")
+.insert({
 
-            <div class="employee-box">
+employee_id:
+currentEmployee.id,
 
-              <b>
-                ${escapeHtml(
-                  employee?.name ||
-                  "غير معروف"
-                )}
-              </b>
+starting_cash:
+amount,
 
-              <div>
-                بدء الشفت:
-                ${dateText(
-                  shift.start_date
-                )}
-              </div>
+status:"open"
 
-              <div>
-                الحالة:
-                ${
-                  shift.status === "open"
-                    ? "مفتوح"
-                    : "مكتمل"
-                }
-              </div>
+})
+.select()
+.single();
 
-              <div>
-                الإيراد الابتدائي:
-                ${money(
-                  shift.starting_cash
-                )} $
-              </div>
 
-              <div>
-                المبلغ المعزز:
-                ${money(
-                  shift.reinforcement_amount
-                )} $
-              </div>
+if(result.error){
 
-              <div>
-                غير المباعة:
-                ${
-                  sh
+throw result.error;
+
+}
+
+
+currentShift =
+result.data;
+
+
+showFinish();
+
+
+message(
+"تم بدء الشفت بنجاح.",
+"success"
+);
+
+
+}catch(e){
+
+message(
+"خطأ بدء الشفت:\n"+e.message,
+"error"
+);
+
+}
+
+}
+
+
+/* فحص الشفت */
+async function checkShift(){
+
+try{
+
+const result =
+await db
+.from("shifts")
+.select("*")
+.eq(
+"employee_id",
+currentEmployee.id
+)
+.eq(
+"status",
+"open"
+)
+.maybeSingle();
+
+
+if(result.error){
+
+throw result.error;
+
+}
+
+
+if(result.data){
+
+currentShift =
+result.data;
+
+showFinish();
+
+}
+
+}catch(e){
+
+message(
+"خطأ تحميل الشفت:\n"+e.message,
+"error"
+);
+
+}
+
+}
+
+
+/* إظهار نهاية الشفت */
+function
