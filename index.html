@@ -19,24 +19,25 @@
       color: #1f2937;
     }
 
-    .header {
+    header {
       background: #111827;
       color: white;
-      padding: 20px;
       text-align: center;
-      box-shadow: 0 3px 12px rgba(0,0,0,.12);
+      padding: 22px 15px;
     }
 
-    .header h1 {
-      margin: 0 0 7px;
+    header h1 {
+      margin: 0 0 8px;
       font-size: 24px;
     }
 
-    .header small {
+    header p {
+      margin: 0;
       color: #cbd5e1;
     }
 
     .container {
+      width: 100%;
       max-width: 1000px;
       margin: 25px auto;
       padding: 0 15px;
@@ -47,19 +48,26 @@
       border-radius: 15px;
       padding: 22px;
       margin-bottom: 20px;
-      box-shadow: 0 3px 15px rgba(0,0,0,.07);
+      box-shadow: 0 4px 15px rgba(0,0,0,.07);
     }
 
-    .card h2 {
+    h2, h3 {
       margin-top: 0;
-      font-size: 20px;
     }
 
-    input, textarea, button {
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+
+    input,
+    textarea,
+    button {
       width: 100%;
       padding: 13px;
-      margin-top: 8px;
-      margin-bottom: 13px;
+      margin-top: 7px;
+      margin-bottom: 12px;
       border-radius: 9px;
       border: 1px solid #d1d5db;
       font-size: 15px;
@@ -72,25 +80,26 @@
 
     button {
       border: none;
-      cursor: pointer;
       background: #2563eb;
       color: white;
       font-weight: bold;
+      cursor: pointer;
     }
 
-    button:hover {
-      opacity: .92;
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
     }
 
-    .danger {
-      background: #dc2626;
-    }
-
-    .success {
+    .green {
       background: #16a34a;
     }
 
-    .secondary {
+    .red {
+      background: #dc2626;
+    }
+
+    .gray {
       background: #475569;
     }
 
@@ -98,39 +107,49 @@
       display: none !important;
     }
 
-    .user-info {
-      background: #eef2ff;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 20px;
-    }
-
-    .status {
-      padding: 12px;
+    .message {
+      padding: 13px;
       border-radius: 9px;
-      margin-bottom: 15px;
+      margin: 12px 0;
       font-weight: bold;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
 
-    .status.success {
+    .success {
       background: #dcfce7;
       color: #166534;
     }
 
-    .status.error {
+    .error {
       background: #fee2e2;
       color: #991b1b;
     }
 
-    .status.info {
+    .info {
       background: #dbeafe;
       color: #1e40af;
     }
 
-    label {
-      display: block;
+    .user-box {
+      background: #eef2ff;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .employee-box {
+      border: 1px solid #e5e7eb;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 10px 0;
+    }
+
+    .amount {
+      font-size: 25px;
       font-weight: bold;
-      margin-top: 10px;
+      color: #2563eb;
+      margin-top: 8px;
     }
 
     .row {
@@ -139,32 +158,13 @@
       gap: 15px;
     }
 
-    .employee-box {
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      padding: 15px;
-      margin-top: 10px;
-    }
-
-    .employee-box strong {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .amount {
-      font-size: 24px;
-      font-weight: bold;
-      color: #2563eb;
-      margin: 10px 0;
-    }
-
-    .footer {
+    footer {
       text-align: center;
-      padding: 25px;
       color: #64748b;
+      padding: 25px;
     }
 
-    @media (max-width: 700px) {
+    @media(max-width:700px) {
       .row {
         grid-template-columns: 1fr;
       }
@@ -174,989 +174,1148 @@
 
 <body>
 
-  <div class="header">
-    <h1>نظام مطابقة الصناديق</h1>
-    <small>إدارة الشفتات ومطابقة الصناديق</small>
+<header>
+  <h1>نظام مطابقة الصناديق</h1>
+  <p>إدارة الشفتات ومطابقة الصناديق</p>
+</header>
+
+<div class="container">
+
+  <!-- تسجيل الدخول -->
+  <div id="loginSection" class="card">
+
+    <h2>تسجيل الدخول</h2>
+
+    <div id="loginMessage"></div>
+
+    <label>اسم المستخدم</label>
+    <input
+      id="loginUsername"
+      type="email"
+      autocomplete="username"
+      placeholder="أدخل البريد الإلكتروني"
+    >
+
+    <label>كلمة المرور</label>
+    <input
+      id="loginPassword"
+      type="password"
+      autocomplete="current-password"
+      placeholder="أدخل كلمة المرور"
+    >
+
+    <button id="loginButton">
+      دخول
+    </button>
+
   </div>
 
-  <div class="container">
 
-    <!-- تسجيل الدخول -->
-    <div id="loginSection" class="card">
-      <h2>تسجيل الدخول</h2>
+  <!-- التطبيق -->
+  <div id="appSection" class="hidden">
 
-      <div id="loginMessage"></div>
+    <div class="user-box">
+      <div>
+        <b>المستخدم:</b>
+        <span id="employeeName"></span>
+      </div>
 
-      <label>اسم المستخدم</label>
-      <input id="loginUsername" type="email" placeholder="أدخل اسم المستخدم">
-
-      <label>كلمة المرور</label>
-      <input id="loginPassword" type="password" placeholder="أدخل كلمة المرور">
-
-      <button id="loginButton">دخول</button>
+      <div style="margin-top:7px">
+        <b>الصلاحية:</b>
+        <span id="employeeRole"></span>
+      </div>
     </div>
 
-
-    <!-- النظام -->
-    <div id="appSection" class="hidden">
-
-      <div class="user-info">
-        <strong>المستخدم: <span id="employeeName"></span></strong>
-        <div>الصلاحية: <span id="employeeRole"></span></div>
-      </div>
-
-      <div id="message"></div>
+    <div id="mainMessage"></div>
 
 
-      <!-- لوحة المدير -->
-      <div id="adminSection" class="card hidden">
+    <!-- لوحة المدير -->
+    <div id="adminSection" class="card hidden">
 
-        <h2>لوحة المدير</h2>
+      <h2>لوحة المدير</h2>
 
-        <button id="showAddEmployeeButton" class="success">
-          + إضافة موظف
-        </button>
-
-        <div id="addEmployeeBox" class="hidden">
-
-          <hr>
-
-          <h3>إضافة موظف جديد</h3>
-
-          <label>اسم الموظف</label>
-          <input id="newEmployeeName" type="text" placeholder="مثلاً: أحمد">
-
-          <label>اسم المستخدم / البريد الإلكتروني</label>
-          <input id="newEmployeeUsername" type="email" placeholder="example@gmail.com">
-
-          <label>كلمة المرور</label>
-          <input id="newEmployeePassword" type="password" placeholder="6 أحرف على الأقل">
-
-          <button id="createEmployeeButton" class="success">
-            حفظ الموظف
-          </button>
-
-          <button id="cancelAddEmployeeButton" class="secondary">
-            إلغاء
-          </button>
-
-        </div>
-
-        <hr>
-
-        <h3>الموظفون</h3>
-
-        <div id="employeesList">
-          جارِ تحميل الموظفين...
-        </div>
-
-        <hr>
-
-        <h3>الشفتات</h3>
-
-        <button id="loadShiftsButton" class="secondary">
-          تحديث الشفتات
-        </button>
-
-        <div id="shiftsList">
-          جارِ تحميل الشفتات...
-        </div>
-
-      </div>
-
-
-      <!-- الموظف -->
-      <div id="employeeSection" class="card hidden">
-
-        <h2>إدارة الشفت</h2>
-
-        <!-- بدء الشفت -->
-        <div id="startShiftBox">
-
-          <h3>بدء الشفت</h3>
-
-          <div class="user-info">
-            الموظف:
-            <strong id="startEmployeeName"></strong>
-          </div>
-
-          <label>الإيراد الابتدائي</label>
-          <input
-            id="startingCash"
-            type="number"
-            step="0.01"
-            min="0"
-            placeholder="أدخل الإيراد الابتدائي"
-          >
-
-          <button id="startShiftButton" class="success">
-            بدء الشفت
-          </button>
-
-        </div>
-
-
-        <!-- نهاية الشفت -->
-        <div id="finishShiftBox" class="hidden">
-
-          <h3>نهاية الشفت</h3>
-
-          <label>المبلغ المعزز</label>
-          <input
-            id="reinforcementAmount"
-            type="number"
-            step="0.01"
-            min="0"
-            value="0"
-          >
-
-          <label>عدد المعاملات غير المباعة</label>
-          <input
-            id="unsoldCount"
-            type="number"
-            min="0"
-            value="0"
-          >
-
-          <div class="user-info">
-            قيمة المعاملات غير المباعة:
-            <div class="amount">
-              <span id="unsoldAmount">0</span> $
-            </div>
-            <small>كل معاملة = 2000 دولار</small>
-          </div>
-
-
-          <h3>المتفرقة</h3>
-
-          <div id="miscList"></div>
-
-          <button id="addMiscButton" class="secondary">
-            + إضافة متفرقة
-          </button>
-
-          <div class="user-info">
-            مجموع المتفرقة:
-            <div class="amount">
-              <span id="miscTotal">0</span> $
-            </div>
-          </div>
-
-
-          <label>ملاحظات</label>
-          <textarea
-            id="notes"
-            placeholder="اكتب الملاحظات إن وجدت"
-          ></textarea>
-
-          <button id="finishShiftButton" class="success">
-            إنهاء الشفت وحفظ البيانات
-          </button>
-
-        </div>
-
-
-        <!-- الشفت المكتمل -->
-        <div id="completedShiftBox" class="hidden">
-
-          <div class="status success">
-            تم إنهاء الشفت بنجاح.
-          </div>
-
-          <p>
-            لا يمكن للموظف تعديل الشفت بعد إنهائه.
-          </p>
-
-        </div>
-
-      </div>
-
-
-      <button id="logoutButton" class="danger">
-        تسجيل الخروج
+      <button
+        id="showAddEmployee"
+        class="green"
+      >
+        + إضافة موظف
       </button>
 
+
+      <div
+        id="addEmployeeBox"
+        class="hidden"
+      >
+
+        <hr>
+
+        <h3>إضافة موظف جديد</h3>
+
+        <label>اسم الموظف</label>
+        <input
+          id="newName"
+          type="text"
+          placeholder="مثلاً أحمد"
+        >
+
+        <label>اسم المستخدم / البريد الإلكتروني</label>
+        <input
+          id="newUsername"
+          type="email"
+          placeholder="example@gmail.com"
+        >
+
+        <label>كلمة المرور</label>
+        <input
+          id="newPassword"
+          type="password"
+          placeholder="6 أحرف على الأقل"
+        >
+
+        <button
+          id="createEmployee"
+          class="green"
+        >
+          حفظ الموظف
+        </button>
+
+        <button
+          id="cancelEmployee"
+          class="gray"
+        >
+          إلغاء
+        </button>
+
+      </div>
+
+
+      <hr>
+
+      <h3>الموظفون</h3>
+
+      <div id="employeesList">
+        جارِ التحميل...
+      </div>
+
+
+      <hr>
+
+      <h3>الشفتات</h3>
+
+      <button
+        id="refreshShifts"
+        class="gray"
+      >
+        تحديث الشفتات
+      </button>
+
+      <div id="shiftsList">
+        جارِ التحميل...
+      </div>
+
     </div>
 
-  </div>
+
+    <!-- قسم الموظف -->
+    <div id="employeeSection" class="card hidden">
+
+      <h2>إدارة الشفت</h2>
 
 
-  <div class="footer">
-    07710621453
+      <!-- بدء الشفت -->
+      <div id="startBox">
+
+        <h3>بدء الشفت</h3>
+
+        <div class="user-box">
+          الموظف:
+          <b id="startEmployeeName"></b>
+        </div>
+
+        <label>الإيراد الابتدائي</label>
+
+        <input
+          id="startingCash"
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder="أدخل الإيراد الابتدائي"
+        >
+
+        <button
+          id="startShift"
+          class="green"
+        >
+          بدء الشفت
+        </button>
+
+      </div>
+
+
+      <!-- نهاية الشفت -->
+      <div
+        id="finishBox"
+        class="hidden"
+      >
+
+        <h3>نهاية الشفت</h3>
+
+        <label>المبلغ المعزز</label>
+
+        <input
+          id="reinforcement"
+          type="number"
+          min="0"
+          step="0.01"
+          value="0"
+        >
+
+
+        <label>عدد المعاملات غير المباعة</label>
+
+        <input
+          id="unsoldCount"
+          type="number"
+          min="0"
+          value="0"
+        >
+
+        <div class="user-box">
+          قيمة غير المباعة:
+
+          <div class="amount">
+            <span id="unsoldAmount">0.00</span> $
+          </div>
+
+          <small>
+            كل معاملة = 2000 دولار
+          </small>
+        </div>
+
+
+        <h3>المتفرقة</h3>
+
+        <div id="miscList"></div>
+
+        <button
+          id="addMisc"
+          class="gray"
+        >
+          + إضافة متفرقة
+        </button>
+
+        <div class="user-box">
+          مجموع المتفرقة:
+
+          <div class="amount">
+            <span id="miscTotal">0.00</span> $
+          </div>
+        </div>
+
+
+        <label>ملاحظات</label>
+
+        <textarea
+          id="notes"
+          placeholder="اكتب الملاحظات إن وجدت"
+        ></textarea>
+
+
+        <button
+          id="finishShift"
+          class="green"
+        >
+          إنهاء الشفت وحفظ البيانات
+        </button>
+
+      </div>
+
+
+      <!-- مكتمل -->
+      <div
+        id="completedBox"
+        class="hidden"
+      >
+
+        <div class="message success">
+          تم إنهاء الشفت بنجاح.
+        </div>
+
+        <p>
+          لا يمكن للموظف تعديل الشفت بعد إنهائه.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <button
+      id="logout"
+      class="red"
+    >
+      تسجيل الخروج
+    </button>
+
   </div>
+
+</div>
+
+<footer>
+  07710621453
+</footer>
 
 
 <script>
 
-  const SUPABASE_URL =
-    "https://paylauzgicnocexukpcg.supabase.co";
+const SUPABASE_URL =
+  "https://paylauzgicnocexukpcg.supabase.co";
 
-  const SUPABASE_KEY =
-    "sb_publishable_Tcq8m6WDJWycpoPxFZObWQ_bkMYwPSv";
+const SUPABASE_KEY =
+  "sb_publishable_Tcq8m6WDJWycpoPxFZObWQ_bkMYwPSv";
 
-
-  const { createClient } =
-    supabase;
-
-  const db =
-    createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
+const client =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
 
-  let currentUser = null;
-  let currentEmployee = null;
-  let currentShift = null;
+let currentUser = null;
+let currentEmployee = null;
+let currentShift = null;
 
 
-  const $ = id =>
-    document.getElementById(id);
+/* =========================
+   أدوات
+========================= */
+
+function showLoginMessage(text, type="error") {
+
+  document.getElementById("loginMessage").innerHTML =
+    `<div class="message ${type}">${escapeHtml(text)}</div>`;
+
+}
 
 
-  function showMessage(text, type = "info") {
+function showMessage(text, type="info") {
 
-    $("message").innerHTML =
-      `<div class="status ${type}">
-        ${text}
-      </div>`;
+  document.getElementById("mainMessage").innerHTML =
+    `<div class="message ${type}">${escapeHtml(text)}</div>`;
 
-  }
+}
 
 
-  function showLoginMessage(text, type = "error") {
+function escapeHtml(value) {
 
-    $("loginMessage").innerHTML =
-      `<div class="status ${type}">
-        ${text}
-      </div>`;
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 
-  }
-
-
-  function money(value) {
-
-    return Number(value || 0).toLocaleString(
-      "en-US",
-      {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }
-    );
-
-  }
+}
 
 
-  // تسجيل الدخول
-  $("loginButton").addEventListener(
-    "click",
-    async () => {
+function money(value) {
 
-      const username =
-        $("loginUsername").value.trim();
+  return Number(value || 0).toLocaleString(
+    "en-US",
+    {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }
+  );
 
-      const password =
-        $("loginPassword").value;
+}
 
-      if (!username || !password) {
 
-        showLoginMessage(
-          "أدخل اسم المستخدم وكلمة المرور"
+function dateText(value) {
+
+  if (!value) return "-";
+
+  return new Date(value).toLocaleString(
+    "ar-IQ",
+    {
+      dateStyle: "medium",
+      timeStyle: "short"
+    }
+  );
+
+}
+
+
+/*
+  يمنع بقاء أي عملية معلقة
+*/
+function withTimeout(promise, seconds=15) {
+
+  return Promise.race([
+
+    promise,
+
+    new Promise((_, reject) => {
+
+      setTimeout(() => {
+
+        reject(
+          new Error(
+            "انتهت مهلة الاتصال. تأكد من الإنترنت ثم حاول مرة ثانية."
+          )
         );
 
-        return;
-      }
+      }, seconds * 1000);
+
+    })
+
+  ]);
+
+}
 
 
-      $("loginButton").disabled = true;
-      $("loginButton").textContent = "جارِ الدخول...";
+/* =========================
+   تسجيل الدخول
+========================= */
+
+document
+  .getElementById("loginButton")
+  .addEventListener("click", login);
 
 
-      try {
+async function login() {
 
-        const {
-          data,
-          error
-        } = await db.auth.signInWithPassword({
+  const username =
+    document
+      .getElementById("loginUsername")
+      .value
+      .trim();
 
+  const password =
+    document
+      .getElementById("loginPassword")
+      .value;
+
+
+  if (!username || !password) {
+
+    showLoginMessage(
+      "اكتب اسم المستخدم وكلمة المرور.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const button =
+    document.getElementById("loginButton");
+
+  button.disabled = true;
+  button.textContent = "جارِ تسجيل الدخول...";
+
+  showLoginMessage(
+    "جارِ التحقق من الحساب...",
+    "info"
+  );
+
+
+  try {
+
+    const result =
+      await withTimeout(
+        client.auth.signInWithPassword({
           email: username,
           password: password
-
-        });
-
-
-        if (error)
-          throw error;
+        }),
+        15
+      );
 
 
-        currentUser = data.user;
+    if (result.error) {
+
+      throw new Error(
+        result.error.message
+      );
+
+    }
 
 
-        await loadEmployee();
+    if (!result.data || !result.data.user) {
+
+      throw new Error(
+        "تم تسجيل الدخول لكن لم يتم العثور على بيانات المستخدم."
+      );
+
+    }
 
 
-      } catch (error) {
-
-        console.error(error);
-
-        showLoginMessage(
-          error.message ||
-          "فشل تسجيل الدخول"
-        );
-
-      }
+    currentUser =
+      result.data.user;
 
 
-      $("loginButton").disabled = false;
-      $("loginButton").textContent = "دخول";
+    showLoginMessage(
+      "تم تسجيل الدخول، جارِ تحميل الحساب...",
+      "info"
+    );
+
+
+    await withTimeout(
+      loadEmployee(),
+      15
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "LOGIN ERROR:",
+      error
+    );
+
+
+    let message =
+      error?.message ||
+      "حدث خطأ غير معروف أثناء تسجيل الدخول.";
+
+
+    /*
+      تحويل بعض أخطاء Supabase
+      إلى رسائل مفهومة
+    */
+
+    if (
+      message.toLowerCase().includes(
+        "invalid login credentials"
+      )
+    ) {
+
+      message =
+        "اسم المستخدم أو كلمة المرور غير صحيحة.";
+
+    }
+
+    else if (
+      message.toLowerCase().includes(
+        "email not confirmed"
+      )
+    ) {
+
+      message =
+        "الحساب غير مؤكد في Supabase.";
+
+    }
+
+    else if (
+      message.toLowerCase().includes(
+        "failed to fetch"
+      )
+    ) {
+
+      message =
+        "تعذر الاتصال بـ Supabase. تأكد من الإنترنت.";
+
+    }
+
+
+    showLoginMessage(
+      "خطأ: " + message,
+      "error"
+    );
+
+  }
+
+
+  button.disabled = false;
+  button.textContent = "دخول";
+
+}
+
+
+/* =========================
+   تحميل الموظف
+========================= */
+
+async function loadEmployee() {
+
+  if (!currentUser) {
+
+    throw new Error(
+      "لا توجد جلسة تسجيل دخول."
+    );
+
+  }
+
+
+  const result =
+    await withTimeout(
+
+      client
+        .from("employees")
+        .select("*")
+        .eq(
+          "auth_user_id",
+          currentUser.id
+        )
+        .maybeSingle(),
+
+      15
+
+    );
+
+
+  if (result.error) {
+
+    throw new Error(
+      "تعذر تحميل بيانات الموظف: " +
+      result.error.message
+    );
+
+  }
+
+
+  if (!result.data) {
+
+    throw new Error(
+      "تم تسجيل الدخول، لكن لا توجد بيانات لهذا المستخدم في جدول employees."
+    );
+
+  }
+
+
+  currentEmployee =
+    result.data;
+
+
+  if (!currentEmployee.active) {
+
+    await client.auth.signOut();
+
+    throw new Error(
+      "هذا الحساب غير فعال."
+    );
+
+  }
+
+
+  document
+    .getElementById("loginSection")
+    .classList
+    .add("hidden");
+
+
+  document
+    .getElementById("appSection")
+    .classList
+    .remove("hidden");
+
+
+  document
+    .getElementById("employeeName")
+    .textContent =
+    currentEmployee.name;
+
+
+  document
+    .getElementById("employeeRole")
+    .textContent =
+    currentEmployee.role === "admin"
+      ? "مدير"
+      : "موظف";
+
+
+  document
+    .getElementById("startEmployeeName")
+    .textContent =
+    currentEmployee.name;
+
+
+  if (
+    currentEmployee.role === "admin"
+  ) {
+
+    document
+      .getElementById("adminSection")
+      .classList
+      .remove("hidden");
+
+
+    document
+      .getElementById("employeeSection")
+      .classList
+      .add("hidden");
+
+
+    await loadEmployees();
+    await loadShifts();
+
+  }
+
+  else {
+
+    document
+      .getElementById("employeeSection")
+      .classList
+      .remove("hidden");
+
+
+    await checkOpenShift();
+
+  }
+
+}
+
+
+/* =========================
+   إضافة موظف
+========================= */
+
+document
+  .getElementById("showAddEmployee")
+  .addEventListener(
+    "click",
+    () => {
+
+      document
+        .getElementById("addEmployeeBox")
+        .classList
+        .remove("hidden");
 
     }
   );
 
 
-  // تحميل بيانات الموظف
-  async function loadEmployee() {
+document
+  .getElementById("cancelEmployee")
+  .addEventListener(
+    "click",
+    () => {
 
-    const {
-      data,
-      error
-    } = await db
-      .from("employees")
-      .select("*")
-      .eq(
-        "auth_user_id",
-        currentUser.id
-      )
-      .single();
-
-
-    if (error)
-      throw error;
-
-
-    if (!data.active) {
-
-      await db.auth.signOut();
-
-      throw new Error(
-        "هذا الحساب غير فعال"
-      );
-
-    }
-
-
-    currentEmployee = data;
-
-
-    $("loginSection")
-      .classList
-      .add("hidden");
-
-    $("appSection")
-      .classList
-      .remove("hidden");
-
-
-    $("employeeName").textContent =
-      data.name;
-
-    $("employeeRole").textContent =
-      data.role === "admin"
-        ? "مدير"
-        : "موظف";
-
-
-    $("startEmployeeName").textContent =
-      data.name;
-
-
-    if (data.role === "admin") {
-
-      $("adminSection")
-        .classList
-        .remove("hidden");
-
-      $("employeeSection")
+      document
+        .getElementById("addEmployeeBox")
         .classList
         .add("hidden");
 
-      await loadEmployees();
-      await loadShifts();
-
-    } else {
-
-      $("adminSection")
-        .classList
-        .add("hidden");
-
-      $("employeeSection")
-        .classList
-        .remove("hidden");
-
-      await checkOpenShift();
-
     }
+  );
+
+
+document
+  .getElementById("createEmployee")
+  .addEventListener(
+    "click",
+    createEmployee
+  );
+
+
+async function createEmployee() {
+
+  const name =
+    document
+      .getElementById("newName")
+      .value
+      .trim();
+
+  const username =
+    document
+      .getElementById("newUsername")
+      .value
+      .trim();
+
+  const password =
+    document
+      .getElementById("newPassword")
+      .value;
+
+
+  if (!name || !username || !password) {
+
+    showMessage(
+      "املأ جميع الحقول.",
+      "error"
+    );
+
+    return;
 
   }
 
 
-  // إظهار إضافة موظف
-  $("showAddEmployeeButton")
-    .addEventListener(
-      "click",
-      () => {
+  if (password.length < 6) {
 
-        $("addEmployeeBox")
-          .classList
-          .remove("hidden");
-
-      }
+    showMessage(
+      "كلمة المرور يجب أن تكون 6 أحرف على الأقل.",
+      "error"
     );
 
+    return;
 
-  // إلغاء
-  $("cancelAddEmployeeButton")
-    .addEventListener(
-      "click",
-      () => {
-
-        $("addEmployeeBox")
-          .classList
-          .add("hidden");
-
-      }
-    );
+  }
 
 
-  // إضافة موظف
-  $("createEmployeeButton")
-    .addEventListener(
-      "click",
-      async () => {
+  const button =
+    document.getElementById("createEmployee");
 
-        const name =
-          $("newEmployeeName")
-            .value
-            .trim();
-
-        const username =
-          $("newEmployeeUsername")
-            .value
-            .trim();
-
-        const password =
-          $("newEmployeePassword")
-            .value;
+  button.disabled = true;
+  button.textContent = "جارِ إنشاء الموظف...";
 
 
-        if (!name ||
-            !username ||
-            !password) {
+  try {
 
-          showMessage(
-            "املأ جميع الحقول",
-            "error"
-          );
+    /*
+      نتأكد أولاً أن جلسة المدير موجودة
+    */
 
-          return;
-        }
+    const sessionResult =
+      await client.auth.getSession();
 
 
-        if (password.length < 6) {
+    if (
+      sessionResult.error
+    ) {
 
-          showMessage(
-            "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
-            "error"
-          );
+      throw sessionResult.error;
 
-          return;
-        }
+    }
 
 
-        const button =
-          $("createEmployeeButton");
+    if (
+      !sessionResult.data.session
+    ) {
 
-        button.disabled = true;
-        button.textContent =
-          "جارِ إنشاء الموظف...";
+      throw new Error(
+        "جلسة المدير غير موجودة. سجل الدخول من جديد."
+      );
+
+    }
 
 
-        try {
+    /*
+      استدعاء Edge Function
+    */
 
-          /*
-            مهم:
-            invoke() يرسل جلسة المدير الحالية
-            إلى Edge Function.
-          */
+    const result =
+      await withTimeout(
 
-          const {
-            data,
-            error
-          } = await db.functions.invoke(
-            "create-employee",
-            {
-              body: {
-                name: name,
-                username: username,
-                password: password
-              }
+        client.functions.invoke(
+          "create-employee",
+          {
+            body: {
+              name: name,
+              username: username,
+              password: password
             }
-          );
-
-
-          if (error) {
-
-            console.error(
-              "Function error:",
-              error
-            );
-
-            throw new Error(
-              error.message ||
-              "تعذر الاتصال بخدمة إضافة الموظف"
-            );
-
           }
+        ),
 
+        20
 
-          if (
-            data &&
-            data.error
-          ) {
-
-            throw new Error(
-              data.error
-            );
-
-          }
-
-
-          showMessage(
-            "تمت إضافة الموظف بنجاح",
-            "success"
-          );
-
-
-          $("newEmployeeName").value = "";
-          $("newEmployeeUsername").value = "";
-          $("newEmployeePassword").value = "";
-
-
-          $("addEmployeeBox")
-            .classList
-            .add("hidden");
-
-
-          await loadEmployees();
-
-
-        } catch (error) {
-
-          console.error(error);
-
-          showMessage(
-            "خطأ: " +
-            (
-              error.message ||
-              "حدث خطأ أثناء إضافة الموظف"
-            ),
-            "error"
-          );
-
-        }
-
-
-        button.disabled = false;
-        button.textContent =
-          "حفظ الموظف";
-
-      }
-    );
-
-
-  // تحميل الموظفين
-  async function loadEmployees() {
-
-    const {
-      data,
-      error
-    } = await db
-      .from("employees")
-      .select(
-        "id,name,username,role,active,created_at"
-      )
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
       );
 
 
-    if (error) {
+    console.log(
+      "CREATE EMPLOYEE RESULT:",
+      result
+    );
 
-      $("employeesList").innerHTML =
-        `<div class="status error">
-          ${error.message}
-        </div>`;
 
-      return;
+    if (result.error) {
+
+      throw new Error(
+        result.error.message ||
+        "فشل استدعاء خدمة إضافة الموظف."
+      );
+
     }
 
 
-    if (!data.length) {
+    if (
+      result.data &&
+      result.data.error
+    ) {
 
-      $("employeesList").innerHTML =
+      throw new Error(
+        result.data.error
+      );
+
+    }
+
+
+    showMessage(
+      "تمت إضافة الموظف بنجاح.",
+      "success"
+    );
+
+
+    document
+      .getElementById("newName")
+      .value = "";
+
+    document
+      .getElementById("newUsername")
+      .value = "";
+
+    document
+      .getElementById("newPassword")
+      .value = "";
+
+
+    document
+      .getElementById("addEmployeeBox")
+      .classList
+      .add("hidden");
+
+
+    await loadEmployees();
+
+
+  } catch (error) {
+
+    console.error(
+      "CREATE EMPLOYEE ERROR:",
+      error
+    );
+
+
+    let message =
+      error?.message ||
+      "حدث خطأ أثناء إضافة الموظف.";
+
+
+    if (
+      message
+        .toLowerCase()
+        .includes("failed to fetch")
+    ) {
+
+      message =
+        "Failed to fetch: تعذر الاتصال بخدمة إضافة الموظف. تأكد من أن Edge Function منشورة وتعمل.";
+
+    }
+
+
+    showMessage(
+      "خطأ: " + message,
+      "error"
+    );
+
+  }
+
+
+  button.disabled = false;
+  button.textContent = "حفظ الموظف";
+
+}
+
+
+/* =========================
+   الموظفون
+========================= */
+
+async function loadEmployees() {
+
+  const box =
+    document.getElementById("employeesList");
+
+  box.innerHTML =
+    "جارِ تحميل الموظفين...";
+
+
+  try {
+
+    const result =
+      await withTimeout(
+
+        client
+          .from("employees")
+          .select(
+            "id,name,username,role,active,created_at"
+          )
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          ),
+
+        15
+
+      );
+
+
+    if (result.error)
+      throw result.error;
+
+
+    if (!result.data.length) {
+
+      box.innerHTML =
         "لا يوجد موظفون.";
 
       return;
+
     }
 
 
-    $("employeesList").innerHTML =
-      data
-        .map(
-          employee => `
+    box.innerHTML =
+      result.data.map(
+        employee => `
+
+          <div class="employee-box">
+
+            <b>
+              ${escapeHtml(employee.name)}
+            </b>
+
+            <div>
+              المستخدم:
+              ${escapeHtml(employee.username)}
+            </div>
+
+            <div>
+              الصلاحية:
+              ${
+                employee.role === "admin"
+                  ? "مدير"
+                  : "موظف"
+              }
+            </div>
+
+            <div>
+              الحالة:
+              ${
+                employee.active
+                  ? "فعال"
+                  : "غير فعال"
+              }
+            </div>
+
+          </div>
+
+        `
+      ).join("");
+
+
+  } catch (error) {
+
+    box.innerHTML =
+      `<div class="message error">
+        خطأ: ${escapeHtml(error.message)}
+      </div>`;
+
+  }
+
+}
+
+
+/* =========================
+   الشفتات
+========================= */
+
+document
+  .getElementById("refreshShifts")
+  .addEventListener(
+    "click",
+    loadShifts
+  );
+
+
+async function loadShifts() {
+
+  const box =
+    document.getElementById("shiftsList");
+
+  box.innerHTML =
+    "جارِ تحميل الشفتات...";
+
+
+  try {
+
+    const result =
+      await withTimeout(
+
+        client
+          .from("shifts")
+          .select(
+            "*, employees(name,username)"
+          )
+          .order(
+            "start_date",
+            {
+              ascending: false
+            }
+          )
+          .limit(100),
+
+        15
+
+      );
+
+
+    if (result.error)
+      throw result.error;
+
+
+    if (!result.data.length) {
+
+      box.innerHTML =
+        "لا توجد شفتات.";
+
+      return;
+
+    }
+
+
+    box.innerHTML =
+      result.data.map(
+        shift => {
+
+          const employee =
+            shift.employees;
+
+
+          return `
 
             <div class="employee-box">
 
-              <strong>
-                ${escapeHtml(employee.name)}
-              </strong>
+              <b>
+                ${escapeHtml(
+                  employee?.name ||
+                  "غير معروف"
+                )}
+              </b>
 
               <div>
-                المستخدم:
-                ${escapeHtml(employee.username)}
-              </div>
-
-              <div>
-                الصلاحية:
-                ${
-                  employee.role === "admin"
-                    ? "مدير"
-                    : "موظف"
-                }
+                بدء الشفت:
+                ${dateText(
+                  shift.start_date
+                )}
               </div>
 
               <div>
                 الحالة:
                 ${
-                  employee.active
-                    ? "فعال"
-                    : "غير فعال"
+                  shift.status === "open"
+                    ? "مفتوح"
+                    : "مكتمل"
                 }
               </div>
 
-            </div>
-
-          `
-        )
-        .join("");
-
-  }
-
-
-  // تحميل الشفتات
-  $("loadShiftsButton")
-    .addEventListener(
-      "click",
-      loadShifts
-    );
-
-
-  async function loadShifts() {
-
-    $("shiftsList").innerHTML =
-      "جارِ تحميل الشفتات...";
-
-
-    const {
-      data,
-      error
-    } = await db
-      .from("shifts")
-      .select(
-        "*, employees(name,username)"
-      )
-      .order(
-        "start_date",
-        {
-          ascending: false
-        }
-      )
-      .limit(100);
-
-
-    if (error) {
-
-      $("shiftsList").innerHTML =
-        `<div class="status error">
-          ${error.message}
-        </div>`;
-
-      return;
-    }
-
-
-    if (!data.length) {
-
-      $("shiftsList").innerHTML =
-        "لا توجد شفتات.";
-
-      return;
-    }
-
-
-    $("shiftsList").innerHTML =
-      data
-        .map(
-          shift => {
-
-            const employee =
-              shift.employees;
-
-            return `
-
-              <div class="employee-box">
-
-                <strong>
-                  ${escapeHtml(
-                    employee?.name || "غير معروف"
-                  )}
-                </strong>
-
-                <div>
-                  بدء الشفت:
-                  ${formatDate(
-                    shift.start_date
-                  )}
-                </div>
-
-                <div>
-                  الحالة:
-                  ${
-                    shift.status === "open"
-                      ? "مفتوح"
-                      : "مكتمل"
-                  }
-                </div>
-
-                <div>
-                  الإيراد الابتدائي:
-                  ${money(
-                    shift.starting_cash
-                  )} $
-                </div>
-
-                <div>
-                  المبلغ المعزز:
-                  ${money(
-                    shift.reinforcement_amount
-                  )} $
-                </div>
-
-                <div>
-                  غير المباعة:
-                  ${
-                    shift.unsold_transactions_count || 0
-                  }
-                  معاملة =
-                  ${money(
-                    shift.unsold_transactions_amount
-                  )} $
-                </div>
-
-                <div>
-                  المتفرقة:
-                  ${
-                    shift.sold_misc_count || 0
-                  }
-                </div>
-
-                <div>
-                  الملاحظات:
-                  ${
-                    escapeHtml(
-                      shift.notes || "-"
-                    )
-                  }
-                </div>
-
+              <div>
+                الإيراد الابتدائي:
+                ${money(
+                  shift.starting_cash
+                )} $
               </div>
 
-            `;
+              <div>
+                المبلغ المعزز:
+                ${money(
+                  shift.reinforcement_amount
+                )} $
+              </div>
 
-          }
-        )
-        .join("");
-
-  }
-
-
-  // بدء الشفت
-  $("startShiftButton")
-    .addEventListener(
-      "click",
-      async () => {
-
-        const startingCash =
-          Number(
-            $("startingCash").value || 0
-          );
-
-
-        if (startingCash < 0) {
-
-          showMessage(
-            "الإيراد الابتدائي غير صحيح",
-            "error"
-          );
-
-          return;
-        }
-
-
-        try {
-
-          const {
-            data: existing,
-            error: checkError
-          } = await db
-            .from("shifts")
-            .select("*")
-            .eq(
-              "employee_id",
-              currentEmployee.id
-            )
-            .eq(
-              "status",
-              "open"
-            )
-            .maybeSingle();
-
-
-          if (checkError)
-            throw checkError;
-
-
-          if (existing) {
-
-            currentShift = existing;
-
-            showFinishShift();
-
-            return;
-
-          }
-
-
-          const {
-            data,
-            error
-          } = await db
-            .from("shifts")
-            .insert({
-
-              employee_id:
-                currentEmployee.id,
-
-              starting_cash:
-                startingCash,
-
-              status:
-                "open"
-
-            })
-            .select("*")
-            .single();
-
-
-          if (error)
-            throw error;
-
-
-          currentShift = data;
-
-          $("startingCash").value = "";
-
-          showFinishShift();
-
-
-          showMessage(
-            "تم بدء الشفت بنجاح",
-            "success"
-          );
-
-
-        } catch (error) {
-
-          console.error(error);
-
-          showMessage(
-            error.message ||
-            "حدث خطأ أثناء بدء الشفت",
-            "error"
-          );
-
-        }
-
-      }
-    );
-
-
-  // البحث عن شفت مفتوح
-  async function checkOpenShift() {
-
-    try {
-
-      const {
-        data,
-        error
-      } = await db
-        .from("shifts")
-        .select("*")
-        .eq(
-          "employee_id",
-          currentEmployee.id
-        )
-        .eq(
-          "status",
-          "open"
-        )
-        .maybeSingle();
-
-
-      if (error)
-        throw error;
-
-
-      if (data) {
-
-        currentShift = data;
-
-        showFinishShift();
-
-      } else {
-
-        $("startShiftBox")
-          .classList
-          .remove("hidden");
-
-        $("finishShiftBox")
-          .classList
-          .add("hidden");
-
-        $("completedShiftBox")
-          .classList
-          .add("hidden");
-
-      }
-
-    } catch (error) {
-
-      showMessage(
-        error.message,
-        "error"
-      );
-
-   
+              <div>
+                غير المباعة:
+                ${
+                  sh
